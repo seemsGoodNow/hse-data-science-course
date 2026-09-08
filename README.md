@@ -4,7 +4,7 @@ An introductory Data Science course for the Master's programme **Strategic Corpo
 
 ## Communication
 
-**[Course Telegram chat](https://t.me/+EJvuoZHhu7M2ZmZi)** — announcements, recaps, and questions. Ask there first: a question one of you has, five of you have.
+**Course Telegram chat** — announcements, recaps, and questions. Ask there first: a question one of you has, five of you have.
 
 - **Environment broken?** Check the [error table in the setup guide](lectures/00-precourse/00-setup.md#when-something-breaks), then ask your AI assistant with the full error text pasted in, then write in Telegram Chat.
 
@@ -26,7 +26,7 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | # | Date   | Topic                                                        | Materials | Milestone            |
 |---|--------|--------------------------------------------------------------|-----------|----------------------|
 | 1 | Sep 2  | Intro: where data comes from, tools setup, Python quick start | [01-intro](lectures/01-intro/) |            |
-| 2 | Sep 9  | Working with tables: pandas + SQL                            | —         |                      |
+| 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/)         |                      |
 | 3 | Sep 16 | Descriptive statistics and visualization                     | —         | **HW1 out**          |
 | 4 | Sep 23 | Hypothesis testing                                           | —         |                      |
 | 5 | Sep 30 | Machine learning on tabular data                             | —         | **HW1 due 18:00, HW2 out** |
