@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<!--
+  Session 3, concept cards — the pictures behind tonight's demos.
+  Open this file in a browser next to the notebooks; each card is also a slide.
+
+  The toy data here matches 01-honest-statistics.ipynb exactly
+  (toy_scans, toy_delays). Change the data in the notebook — change it here too.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Session 3 — concept cards</title>
+<style>
+  :root {
+    --ink: #1a2233;
+    --muted: #6b7486;
+    --line: #d9dee8;
+    --green-bg: #e5f5e9;  --green-ink: #1c6b3a;
+    --amber-bg: #fdf3d9;
+    --red-bg:   #fdeaea;  --red-ink:  #b3392f;
+    --blue-bg:  #e9f0fc;  --blue-ink: #2757a8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px;
+    background: #f2f4f8; color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: 18px;
+  }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 32px 36px; margin: 0 auto 48px; max-width: 1100px;
+    box-shadow: 0 2px 10px rgba(20,30,60,.06);
+  }
+  .card h2 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.01em; }
+  .card .sub { margin: 0 0 28px; color: var(--muted); font-size: 19px; }
+
+  /* ---- a lane: input  →[operation]→  output, never wraps ---- */
+  .lane {
+    display: flex; flex-wrap: nowrap; align-items: center; gap: 26px;
+    overflow-x: auto;                      /* narrow screen: scroll, don't stack */
+    padding: 18px 20px; margin-bottom: 18px;
+    border: 1px solid var(--line); border-radius: 12px; background: #fcfdff;
+  }
+  .lane.win { background: #fbfcff; }
+  .lane-head {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;
+  }
+  .lane-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 27px; height: 27px; border-radius: 50%; flex: 0 0 auto;
+    font-size: 16px; font-weight: 700; color: #fff; background: var(--blue-ink);
+  }
+  .lane-num.b { background: var(--green-ink); }
+  .lane-title { font-size: 21px; font-weight: 700; }
+  .lane-sub { color: var(--muted); font-size: 16px; }
+
+  .op { flex: 0 0 auto; text-align: center; min-width: 170px; }
+  .op .code {
+    display: inline-block; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px; background: #eef1f6; border: 1px solid var(--line);
+    border-radius: 8px; padding: 4px 10px; white-space: nowrap;
+  }
+  .op .shaft { font-size: 26px; color: var(--muted); line-height: 1.1; margin-top: 4px; }
+
+  .slot { flex: 0 0 auto; }
+  .slot-cap {
+    font-weight: 700; font-size: 14px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 7px;
+  }
+  .rows {
+    display: inline-block; margin-top: 8px; font-size: 15px; font-weight: 700;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .rows.same { background: var(--green-bg); color: var(--green-ink); }
+  .rows.less { background: var(--amber-bg); color: #9a6a00; }
+
+  table.df {
+    border-collapse: collapse; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 16px; background: #fff;
+  }
+  table.df th, table.df td { border: 1px solid var(--line); padding: 4px 11px; text-align: left; }
+  table.df th { background: #eef1f6; font-weight: 600; }
+  table.df td.idx, table.df th.idx { background: #f7f8fb; color: var(--muted); text-align: right; }
+  td.nan { color: var(--red-ink); font-style: italic; }
+  td.hl  { background: var(--blue-bg); font-weight: 700; }
+  tr.taskA td { background: #eef4fd; }
+  tr.taskB td { background: #fdf6e6; }
+  tr.taskA td.idx, tr.taskB td.idx { background: #f7f8fb; }
+  tr.taskA td.hl { background: #d6e6fb; }
+  tr.taskB td.hl { background: #fbeccd; }
+
+  .rule {
+    margin-top: 22px; padding: 14px 18px; border-radius: 10px;
+    background: var(--green-bg); color: var(--green-ink);
+    font-weight: 600; font-size: 20px;
+  }
+  .rule.warn { background: var(--red-bg); color: var(--red-ink); }
+  .note { color: var(--muted); font-size: 16px; margin-top: 14px; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace;
+         background: #eef1f6; padding: 1px 7px; border-radius: 6px; font-size: 0.92em; }
+  .figwrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<!-- ============ CARD 1 — window function vs aggregate ============ -->
+<div class="card" id="card1">
+  <h2>Two ways to use a group</h2>
+  <p class="sub">The same six scans, the same <code>groupby("task_id")</code>, two different questions. Read each lane left to right.</p>
+
+  <div class="lane-head">
+    <span class="lane-num">1</span>
+    <span class="lane-title">Aggregate</span>
+    <span class="lane-sub">"one number for this whole pile"</span>
+  </div>
+  <div class="lane">
+    <div class="slot">
+      <div class="slot-cap">in — 6 scans, 2 tasks</div>
+      <table class="df">
+        <tr><th class="idx"></th><th>task_id</th><th>event_time</th></tr>
+        <tr class="taskA"><td class="idx">0</td><td>A</td><td>10:00:00</td></tr>
+        <tr class="taskA"><td class="idx">1</td><td>A</td><td>10:00:05</td></tr>
+        <tr class="taskA"><td class="idx">2</td><td>A</td><td>10:00:12</td></tr>
+        <tr class="taskB"><td class="idx">3</td><td>B</td><td>11:30:00</td></tr>
+        <tr class="taskB"><td class="idx">4</td><td>B</td><td>11:30:04</td></tr>
+        <tr class="taskB"><td class="idx">5</td><td>B</td><td>11:30:30</td></tr>
+      </table>
+    </div>
+
+    <div class="op">
+      <span class="code">.agg(start=("event_time", "min"))</span>
+      <div class="shaft">───────▶</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-cap">out — one row per task</div>
+      <table class="df">
+        <tr><th>task_id</th><th>start</th></tr>
+        <tr class="taskA"><td>A</td><td>10:00:00</td></tr>
+        <tr class="taskB"><td>B</td><td>11:30:00</td></tr>
+      </table>
+      <div class="rows less">6 rows in → 2 rows out</div>
+    </div>
+  </div>
+
+  <div class="lane-head">
+    <span class="lane-num b">2</span>
+    <span class="lane-title">Window function</span>
+    <span class="lane-sub">"how does this row compare with its neighbour?"</span>
+  </div>
+  <div class="lane win">
+    <div class="slot">
+      <div class="slot-cap">in — the same 6 scans</div>
+      <table class="df">
+        <tr><th class="idx"></th><th>task_id</th><th>event_time</th></tr>
+        <tr class="taskA"><td class="idx">0</td><td>A</td><td>10:00:00</td></tr>
+        <tr class="taskA"><td class="idx">1</td><td>A</td><td>10:00:05</td></tr>
+        <tr class="taskA"><td class="idx">2</td><td>A</td><td>10:00:12</td></tr>
+        <tr class="taskB"><td class="idx">3</td><td>B</td><td>11:30:00</td></tr>
+        <tr class="taskB"><td class="idx">4</td><td>B</td><td>11:30:04</td></tr>
+        <tr class="taskB"><td class="idx">5</td><td>B</td><td>11:30:30</td></tr>
+      </table>
+    </div>
+
+    <div class="op">
+      <span class="code">.diff().dt.total_seconds()</span>
+      <div class="shaft">───────▶</div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-cap">out — same rows, one new column</div>
+      <table class="df">
+        <tr><th class="idx"></th><th>task_id</th><th>event_time</th><th>gap_s</th></tr>
+        <tr class="taskA"><td class="idx">0</td><td>A</td><td>10:00:00</td><td class="hl nan">NaN</td></tr>
+        <tr class="taskA"><td class="idx">1</td><td>A</td><td>10:00:05</td><td class="hl">5</td></tr>
+        <tr class="taskA"><td class="idx">2</td><td>A</td><td>10:00:12</td><td class="hl">7</td></tr>
+        <tr class="taskB"><td class="idx">3</td><td>B</td><td>11:30:00</td><td class="hl nan">NaN</td></tr>
+        <tr class="taskB"><td class="idx">4</td><td>B</td><td>11:30:04</td><td class="hl">4</td></tr>
+        <tr class="taskB"><td class="idx">5</td><td>B</td><td>11:30:30</td><td class="hl">26</td></tr>
+      </table>
+      <div class="rows same">6 rows in → 6 rows out</div>
+    </div>
+  </div>
+
+  <div class="rule">Aggregate <b>collapses</b> each pile to one row. A window function <b>keeps every row</b> in place and fills in a value computed from its neighbour inside the same pile.</div>
+
+  <div class="rule warn">Row 0 and row 3 are <span style="font-family:'SF Mono',Menlo,monospace">NaN</span>: each is the first scan of its task, so there is nothing above it to subtract. That is the group boundary doing its job. Drop the <code>groupby</code> and pandas will subtract task A's last scan from task B's first one — inventing a gap that never happened.</div>
+
+  <p class="note">Same shape, other window functions: <code>.shift()</code> (peek at the previous row), <code>.cumsum()</code> (running total), <code>.rank()</code> (position inside the group), <code>.rolling(n).mean()</code> (moving average). In SQL they are written <code>OVER (PARTITION BY task_id ORDER BY event_time)</code> — same idea, different spelling.</p>
+</div>
+
+<!-- ============ CARD 2 — the boxplot, taken apart ============ -->
+<div class="card" id="card2">
+  <h2>What a boxplot is made of</h2>
+  <p class="sub">Nine delivery delays, sorted: <code>3, 5, 6, 7, 8, 9, 11, 14, 30</code>. The box is drawn from the same quantiles you can compute by hand.</p>
+
+  <div class="figwrap">
+  <svg width="1000" height="330" viewBox="0 0 1000 330" xmlns="http://www.w3.org/2000/svg"
+       font-family="Avenir Next, Segoe UI, system-ui, sans-serif">
+    <!-- value v -> x = 60 + v*26 -->
+
+    <!-- leader lines -->
+    <line x1="216" y1="78" x2="216" y2="118" stroke="#6b7486" stroke-width="1"/>
+    <line x1="268" y1="44" x2="268" y2="118" stroke="#6b7486" stroke-width="1"/>
+    <line x1="346" y1="78" x2="346" y2="118" stroke="#6b7486" stroke-width="1"/>
+    <line x1="840" y1="60" x2="840" y2="142" stroke="#b3392f" stroke-width="1"/>
+
+    <!-- labels -->
+    <text x="268" y="36" font-size="15" font-weight="700" text-anchor="middle" fill="#1a2233">median = 8</text>
+    <text x="212" y="70" font-size="15" font-weight="700" text-anchor="end" fill="#2757a8">q1 = 6</text>
+    <text x="350" y="70" font-size="15" font-weight="700" text-anchor="start" fill="#2757a8">q3 = 11</text>
+    <text x="438" y="146" font-size="14" text-anchor="start" fill="#6b7486">whisker ends at the last point</text>
+    <text x="438" y="164" font-size="14" text-anchor="start" fill="#6b7486">within 1.5 × IQR of the box</text>
+    <text x="840" y="52" font-size="14" text-anchor="middle" fill="#b3392f">30 — one real observation</text>
+
+    <!-- whiskers -->
+    <line x1="138" y1="150" x2="216" y2="150" stroke="#1a2233" stroke-width="2"/>
+    <line x1="346" y1="150" x2="424" y2="150" stroke="#1a2233" stroke-width="2"/>
+    <line x1="138" y1="132" x2="138" y2="168" stroke="#1a2233" stroke-width="2"/>
+    <line x1="424" y1="132" x2="424" y2="168" stroke="#1a2233" stroke-width="2"/>
+
+    <!-- the box: q1=6 -> 216, q3=11 -> 346 -->
+    <rect x="216" y="118" width="130" height="64" fill="#9ec5e8" stroke="#1a2233" stroke-width="2"/>
+    <line x1="268" y1="118" x2="268" y2="182" stroke="#1a2233" stroke-width="3"/>
+
+    <!-- outlier -->
+    <circle cx="840" cy="150" r="6" fill="#b3392f"/>
+
+    <!-- IQR bracket under the box -->
+    <line x1="216" y1="200" x2="346" y2="200" stroke="#2757a8" stroke-width="1.5"/>
+    <line x1="216" y1="194" x2="216" y2="206" stroke="#2757a8" stroke-width="1.5"/>
+    <line x1="346" y1="194" x2="346" y2="206" stroke="#2757a8" stroke-width="1.5"/>
+    <text x="281" y="222" font-size="14" font-weight="700" text-anchor="middle" fill="#2757a8">IQR = 5</text>
+    <text x="281" y="240" font-size="13" text-anchor="middle" fill="#6b7486">the middle half of the data</text>
+
+    <!-- the nine points on their own line -->
+    <line x1="60" y1="285" x2="960" y2="285" stroke="#d9dee8" stroke-width="1"/>
+    <text x="60" y="272" font-size="13" fill="#6b7486">the nine numbers themselves</text>
+    <g fill="#1a2233">
+      <circle cx="138" cy="285" r="5"/><circle cx="190" cy="285" r="5"/>
+      <circle cx="216" cy="285" r="5"/><circle cx="242" cy="285" r="5"/>
+      <circle cx="268" cy="285" r="5"/><circle cx="294" cy="285" r="5"/>
+      <circle cx="346" cy="285" r="5"/><circle cx="424" cy="285" r="5"/>
+    </g>
+    <circle cx="840" cy="285" r="6" fill="#b3392f"/>
+    <g font-size="13" fill="#6b7486" text-anchor="middle">
+      <text x="138" y="308">3</text><text x="190" y="308">5</text><text x="216" y="308">6</text>
+      <text x="242" y="308">7</text><text x="268" y="308">8</text><text x="294" y="308">9</text>
+      <text x="346" y="308">11</text><text x="424" y="308">14</text>
+      <text x="840" y="308" fill="#b3392f">30</text>
+    </g>
+  </svg>
+  </div>
+
+  <div class="rule warn">The red dot is <b>not an error</b>. It is one real observation sitting far from the middle — in our warehouse, those dots are the 44-minute pauses, the most interesting rows we have.</div>
+  <div class="rule">The box says nothing about <b>how many</b> points there are. A box built from 12 tasks looks exactly like a box built from 12,000. Comparing groups of different sizes? Say the sizes out loud.</div>
+
+  <p class="note">Two groups? Draw histograms instead — they show the shape. Five or more groups? Boxes, because histograms stop being readable.</p>
+</div>
+
+</body>
+</html>

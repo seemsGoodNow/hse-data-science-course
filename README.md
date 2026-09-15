@@ -26,8 +26,8 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | # | Date   | Topic                                                        | Materials | Milestone            |
 |---|--------|--------------------------------------------------------------|-----------|----------------------|
 | 1 | Sep 2  | Intro: where data comes from, tools setup, Python quick start | [01-intro](lectures/01-intro/) |            |
-| 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/)         |                      |
-| 3 | Sep 16 | Descriptive statistics and visualization                     | —         | **HW1 out**          |
+| 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/) |                      |
+| 3 | Sep 16 | Descriptive statistics and visualization                     | [03-stats-viz](lectures/03-stats-viz/)         | **HW1 out**          |
 | 4 | Sep 23 | Hypothesis testing                                           | —         |                      |
 | 5 | Sep 30 | Machine learning on tabular data                             | —         | **HW1 due 18:00, HW2 out** |
 | 6 | Oct 7  | Evaluating models                                            | —         | **Quiz, first 25 min** |
@@ -45,7 +45,9 @@ The Materials column fills in as we go: notebooks are pushed the same evening as
 | [**HW2**](homeworks/hw2/) — corporate bankruptcy: predict it and explain it | Sep 30 | Oct 14, 18:00 | 40% |
 | **Quiz** — in class, start of Session 6 | | Oct 7, 18:10 | 20% |
 
-Both homeworks are individual: in HW1 you are assigned one whole warehouse out of four, in HW2 your own subsample of the bankruptcy data and your own cost of a missed default. The format is a *researcher's story*: a notebook where hypotheses are stated **before** the code, conclusions follow the evidence, and a short business summary closes the work. You submit the notebook plus an exported HTML by direct message. A detailed rubric is published with each assignment.
+Both homeworks are individual: in HW1 you are assigned one whole warehouse out of four, in HW2 your own subsample of the bankruptcy data and your own cost of a missed default. The format is a *researcher's story*: a notebook where hypotheses are stated **before** the code, conclusions follow the evidence, and a short business summary closes the work. You submit the notebook plus an exported HTML by direct message; each assignment folder has a template notebook to start from and the export steps are in the [setup guide](lectures/00-precourse/00-setup.md).
+
+A detailed rubric is published with each assignment. The scale is the same for both: a complete, correct submission scores **up to 8 of 10**, and the last two points are for **one extra move done well**, your choice from a short list in the assignment (an extra hypothesis, an AI-built HTML one-pager, a statistical test). Statistical tests are optional in HW1: a clear split, a chart and a defended verdict is a complete answer.
 
 The **quiz** is 15 questions, about 25 minutes, closed book. It tests understanding, not memory: read a chart, spot the bug in a pandas snippet, interpret a p-value.
 
