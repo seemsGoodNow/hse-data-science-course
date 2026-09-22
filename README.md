@@ -28,7 +28,7 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | 1 | Sep 2  | Intro: where data comes from, tools setup, Python quick start | [01-intro](lectures/01-intro/) |            |
 | 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/) |                      |
 | 3 | Sep 16 | Descriptive statistics and visualization                     | [03-stats-viz](lectures/03-stats-viz/)         | **HW1 out**          |
-| 4 | Sep 23 | Hypothesis testing                                           | —         |                      |
+| 4 | Sep 23 | Hypothesis testing                                           | [04-hypothesis-testing](lectures/04-hypothesis-testing/) |            |
 | 5 | Sep 30 | Machine learning on tabular data                             | —         | **HW1 due 18:00, HW2 out** |
 | 6 | Oct 7  | Evaluating models                                            | —         | **Quiz, first 25 min** |
 | 7 | Oct 14 | Clustering and communicating results                         | —         | **HW2 due 18:00**    |
@@ -125,11 +125,14 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 <details>
 <summary><b>4. Hypothesis testing</b></summary>
 
-- Null and alternative hypotheses: the intuition, with pictures
-- What a p-value actually says (and what it doesn't)
-- Choosing a test: a practical decision guide
-- Pitfalls: peeking, multiple comparisons, "significant but tiny"
-- Case: does factor X really change warehouse performance?
+- Chance produces differences all the time, so "group A is faster" is never evidence on its own
+- The permutation test, built by hand on six numbers first: shuffle the labels ten thousand times and read the p-value straight off one histogram
+- The null hypothesis and the p-value named only after you have watched them happen, plus the five things a p-value does not say
+- Choosing a test without a PhD: t-test first, a rank test beside it when a long tail makes the mean unrepresentative, chi-square for shares, permutation for anything home-made
+- Two cases on the warehouse: does the shelf level slow picking down (and is it the bending, or the weight?), and do small parts get confused more often
+- Metric before test, process before metric: the second case shows the obvious metric inverting the answer before any test is run
+- Pitfalls demonstrated live on data with no effect in it: peeking, multiple comparisons, "significant but tiny"
+- The honest-verdict checklist, which is the shape a strong HW1 Part 2 verdict has
 </details>
 
 <details>

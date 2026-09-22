@@ -13,3 +13,5 @@ catboost_info/
 lectures/00-precourse/sales.csv
 .venv
 *.DS_Store
+*.zip
+test_pickle.pkl

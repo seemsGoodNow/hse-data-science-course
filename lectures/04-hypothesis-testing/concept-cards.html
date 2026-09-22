@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<!--
+  Session 4, concept cards — the pictures behind tonight's demos.
+  Open this file in a browser next to the notebooks; each card is also a slide.
+
+  Card 1 mirrors the permutation histograms of 01-luck-or-signal.ipynb,
+  card 3 mirrors the ambush of 02-two-cases.ipynb. Change the numbers in a
+  notebook — change them here too.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Session 4 — concept cards</title>
+<style>
+  :root {
+    --ink: #1a2233;
+    --muted: #6b7486;
+    --line: #d9dee8;
+    --green-bg: #e5f5e9;  --green-ink: #1c6b3a;
+    --amber-bg: #fdf3d9;  --amber-ink: #9a6a00;
+    --red-bg:   #fdeaea;  --red-ink:  #b3392f;
+    --blue-bg:  #e9f0fc;  --blue-ink: #2757a8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px;
+    background: #f2f4f8; color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: 18px;
+  }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 32px 36px; margin: 0 auto 48px; max-width: 1100px;
+    box-shadow: 0 2px 10px rgba(20,30,60,.06);
+  }
+  .card h2 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.01em; }
+  .card .sub { margin: 0 0 28px; color: var(--muted); font-size: 19px; }
+
+  .panels { display: flex; flex-wrap: nowrap; gap: 24px; overflow-x: auto; }
+  .panel {
+    flex: 0 0 auto; border: 1px solid var(--line); border-radius: 12px;
+    background: #fcfdff; padding: 14px 16px 6px;
+  }
+  .panel-cap { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+  .panel-sub { color: var(--muted); font-size: 15px; margin-bottom: 6px; }
+  .verdict {
+    display: inline-block; margin: 6px 0 10px; padding: 4px 12px;
+    border-radius: 999px; font-size: 16px; font-weight: 700;
+  }
+  .verdict.none { background: var(--amber-bg); color: var(--amber-ink); }
+  .verdict.real { background: var(--green-bg); color: var(--green-ink); }
+
+  svg .mid  { fill: #b9c2cf; }
+  svg .tail { fill: #f0b3ae; }
+
+  /* ---- a lane: input  →[operation]→  output, never wraps ---- */
+  .lane {
+    display: flex; flex-wrap: nowrap; align-items: center; gap: 16px;
+    overflow-x: auto;
+    padding: 18px 20px; margin-bottom: 18px;
+    border: 1px solid var(--line); border-radius: 12px; background: #fcfdff;
+  }
+  .lane-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .lane-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 27px; height: 27px; border-radius: 50%; flex: 0 0 auto;
+    font-size: 16px; font-weight: 700; color: #fff; background: var(--red-ink);
+  }
+  .lane-num.b { background: var(--green-ink); }
+  .lane-title { font-size: 21px; font-weight: 700; }
+  .lane-sub { color: var(--muted); font-size: 16px; }
+
+  .op { flex: 0 0 auto; text-align: center; min-width: 145px; }
+  .op .code {
+    display: inline-block; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px; background: #eef1f6; border: 1px solid var(--line);
+    border-radius: 8px; padding: 4px 10px; white-space: nowrap;
+  }
+  .op .shaft { font-size: 26px; color: var(--muted); line-height: 1.1; margin-top: 4px; }
+  .slot { flex: 0 0 auto; }
+  .slot-cap {
+    font-weight: 700; font-size: 14px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 7px;
+  }
+  .rows {
+    display: inline-block; margin-top: 8px; font-size: 15px; font-weight: 700;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .rows.bad  { background: var(--red-bg);   color: var(--red-ink); }
+  .rows.good { background: var(--green-bg); color: var(--green-ink); }
+
+  table.df {
+    border-collapse: collapse; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px; background: #fff;
+  }
+  table.df th, table.df td { border: 1px solid var(--line); padding: 4px 11px; text-align: left; }
+  table.df th { background: #eef1f6; font-weight: 600; }
+  table.df td.idx, table.df th.idx { background: #f7f8fb; color: var(--muted); text-align: right; }
+  td.hl  { background: var(--blue-bg); font-weight: 700; }
+  td.bad { background: #fbe0dd; font-weight: 700; color: var(--red-ink); }
+  td.good{ background: #dff0e4; font-weight: 700; color: var(--green-ink); }
+
+  /* ---- the test chooser ---- */
+  .tree { display: flex; flex-direction: column; gap: 14px; }
+  .branch {
+    display: flex; flex-wrap: nowrap; align-items: stretch; gap: 16px;
+    overflow-x: auto; padding: 14px 16px;
+    border: 1px solid var(--line); border-radius: 12px; background: #fcfdff;
+  }
+  .branch .q { flex: 0 0 300px; font-weight: 700; font-size: 18px; }
+  .branch .q small { display: block; font-weight: 400; color: var(--muted); font-size: 15px; }
+  .branch .arrow { flex: 0 0 auto; color: var(--muted); font-size: 24px; align-self: center; }
+  .pick {
+    flex: 0 0 auto; align-self: center; padding: 8px 14px; border-radius: 10px;
+    background: var(--blue-bg); color: var(--blue-ink); font-weight: 700;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 16px;
+  }
+  .pick.strong { background: var(--green-bg); color: var(--green-ink); }
+  .pick.weak   { background: var(--amber-bg); color: var(--amber-ink); }
+  .why { flex: 1 1 240px; min-width: 220px; color: var(--muted); font-size: 16px; align-self: center; }
+
+  .rule {
+    margin-top: 22px; padding: 14px 18px; border-radius: 10px;
+    background: var(--green-bg); color: var(--green-ink);
+    font-weight: 600; font-size: 20px;
+  }
+  .rule.warn { background: var(--red-bg); color: var(--red-ink); }
+  .myths { margin: 18px 0 0; padding: 0; list-style: none; }
+  .myths li {
+    padding: 8px 14px; margin-bottom: 8px; border-radius: 8px;
+    background: var(--red-bg); color: var(--red-ink); font-size: 17px;
+  }
+  .myths li s { color: var(--red-ink); }
+  ol.recipe { counter-reset: none; margin: 16px 0 0 22px; padding-left: 20px; list-style: decimal; }
+  ol.recipe li { background: #fcfdff; border: 1px solid var(--line); color: var(--ink);
+                 padding: 9px 14px; margin-bottom: 8px; border-radius: 8px; font-size: 17px; }
+  .myths li b { color: var(--ink); }
+  .note { color: var(--muted); font-size: 16px; margin-top: 14px; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace;
+         background: #eef1f6; padding: 1px 7px; border-radius: 6px; font-size: 0.92em; }
+  .figwrap { overflow-x: auto; }
+
+  /* ---- a card told as numbered steps, one under another ---- */
+  .step { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 22px; }
+  .step:first-of-type { border-top: 0; padding-top: 4px; margin-top: 10px; }
+  .step-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%; flex: 0 0 auto;
+    font-size: 16px; font-weight: 700; color: #fff; background: var(--blue-ink);
+  }
+  .step-title { font-size: 21px; font-weight: 700; }
+  .step-q { color: var(--muted); font-size: 17px; margin: 0 0 12px 40px; }
+  .step-fig { background: #fcfdff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px 2px; }
+  .step-take {
+    margin: 12px 0 0 40px; padding: 9px 15px; border-radius: 10px;
+    background: var(--green-bg); color: var(--green-ink); font-weight: 600; font-size: 17px;
+  }
+  .step-take.warn { background: var(--amber-bg); color: var(--amber-ink); }
+  /* ---- sliders on the live panels ---- */
+  .knobs {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px;
+    margin: 12px 0 2px 40px; font-size: 16px; color: var(--ink);
+  }
+  .knobs label { display: inline-flex; align-items: center; gap: 9px; }
+  .knobs input[type=range] { width: 190px; accent-color: var(--blue-ink); }
+  .knobs output { font-weight: 700; color: var(--blue-ink); min-width: 46px; display: inline-block; }
+  .knobs button {
+    font: inherit; font-weight: 600; cursor: pointer; padding: 5px 13px;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+  }
+  .live-read { margin: 8px 0 0 40px; font-size: 16px; color: var(--muted); }
+  .live-read b { color: var(--ink); }
+  </style>
+</head>
+<body>
+<div class="card" id="card1">
+  <h2>Card 1 &mdash; the p-value, read off one picture</h2>
+  <p class="sub">Both hills are the same thing: 10,000 worlds in which the group labels were shuffled at random, so only luck is at work. The red line is the difference we actually measured. Same warehouse, same week, same code, and two opposite verdicts.</p>
+
+  <div class="rule">The whole idea in one question: <b>if these two groups really were one and the same, how often would chance alone hand me a gap this big?</b> Build the world where they are the same, count how often it beats you, and that share is the p-value.</div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">1</span><span class="step-title">Sectors 5761 vs 5130</span></div>
+    <p class="step-q">medians 135.3 against 133.5 picks per hour, so a gap of +1.8</p>
+    <div class="step-fig">
+      <!-- FIG:noise-5761-5130 -->
+<svg viewBox="0 0 1000 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"><polygon points="70.0,170 70.0,169.9 73.0,169.9 76.0,169.9 79.0,169.9 82.0,169.8 85.0,169.8 88.0,169.7 91.0,169.7 94.0,169.6 97.0,169.5 100.0,169.4 103.0,169.3 106.0,169.2 109.0,169.1 112.0,169.0 115.0,168.9 118.0,168.7 121.0,168.6 124.0,168.5 127.0,168.3 130.0,168.2 133.0,168.1 136.0,167.9 139.0,167.7 142.0,167.5 145.0,167.3 148.0,167.0 151.0,166.7 154.0,166.3 157.0,165.9 160.0,165.3 163.0,164.7 166.0,164.0 169.0,163.2 172.0,162.4 175.0,161.4 178.0,160.4 181.0,159.4 184.0,158.3 187.0,157.2 190.0,156.1 193.0,155.0 196.0,154.0 199.0,153.0 202.0,152.0 205.0,151.2 208.0,150.3 211.0,149.6 214.0,148.9 217.0,148.2 220.0,147.6 223.0,146.9 226.0,146.4 229.0,145.8 232.0,145.2 235.0,144.6 238.0,144.0 241.0,143.4 244.0,142.9 247.0,142.3 250.0,141.7 253.0,141.2 256.0,140.6 259.0,140.1 262.0,139.6 265.0,139.1 268.0,138.6 271.0,138.1 274.0,137.5 277.0,137.0 280.0,136.4 283.0,135.9 286.0,135.3 289.0,134.6 292.0,133.9 295.0,133.2 298.0,132.5 301.0,131.7 304.0,130.8 307.0,129.8 310.0,128.7 313.0,127.5 316.0,126.1 319.0,124.6 322.0,122.9 325.0,121.0 328.0,118.9 331.0,116.6 334.0,114.1 337.0,111.5 340.0,108.7 343.0,105.8 346.0,102.8 349.0,99.8 352.0,96.9 355.0,93.9 358.0,91.0 361.0,88.3 364.0,85.7 367.0,83.2 370.0,80.9 373.0,78.7 376.0,76.8 379.0,75.0 382.0,73.4 385.0,72.1 388.0,70.9 391.0,69.9 394.0,69.2 397.0,68.7 400.0,68.4 403.0,68.4 406.0,68.6 409.0,69.1 412.0,69.8 415.0,70.6 418.0,71.7 421.0,72.8 424.0,74.0 427.0,75.1 430.0,76.2 433.0,77.2 436.0,78.0 439.0,78.6 442.0,78.9 445.0,79.0 448.0,78.9 451.0,78.5 454.0,78.0 457.0,77.2 460.0,76.4 463.0,75.5 466.0,74.6 469.0,73.7 472.0,72.9 475.0,72.3 478.0,71.7 481.0,71.3 484.0,70.9 487.0,70.5 490.0,70.1 493.0,69.5 496.0,68.6 499.0,67.5 502.0,66.0 505.0,64.1 508.0,61.8 511.0,59.1 514.0,56.1 517.0,52.7 520.0,49.2 523.0,45.7 526.0,42.2 529.0,38.9 532.0,36.0 535.0,33.6 538.0,31.7 541.0,30.5 544.0,30.0 547.0,30.2 550.0,31.2 553.0,32.9 556.0,35.2 559.0,38.1 562.0,41.4 565.0,45.1 568.0,49.1 571.0,53.3 574.0,57.5 577.0,61.6 580.0,65.7 583.0,69.6 586.0,73.3 589.0,76.8 592.0,80.0 595.0,82.9 598.0,85.6 601.0,87.9 604.0,90.0 607.0,91.8 610.0,93.4 613.0,94.7 616.0,95.8 619.0,96.7 622.0,97.4 625.0,97.9 628.0,98.1 631.0,98.2 634.0,98.1 637.0,97.9 640.0,97.5 643.0,97.0 646.0,96.5 649.0,95.9 652.0,95.3 655.0,94.8 658.0,94.3 661.0,94.0 664.0,93.9 667.0,94.0 670.0,94.4 673.0,95.0 676.0,96.0 679.0,97.2 682.0,98.7 685.0,100.5 688.0,102.5 691.0,104.7 694.0,107.1 697.0,109.6 700.0,112.1 703.0,114.7 706.0,117.3 709.0,119.9 712.0,122.4 715.0,124.8 718.0,127.1 721.0,129.3 724.0,131.4 727.0,133.4 730.0,135.3 733.0,137.1 736.0,138.8 739.0,140.3 742.0,141.9 745.0,143.3 748.0,144.7 751.0,146.0 754.0,147.3 757.0,148.5 760.0,149.7 763.0,150.8 766.0,152.0 769.0,153.1 772.0,154.1 775.0,155.2 778.0,156.1 781.0,157.1 784.0,158.0 787.0,158.8 790.0,159.6 793.0,160.3 796.0,160.9 799.0,161.5 802.0,162.0 805.0,162.5 808.0,162.9 811.0,163.3 814.0,163.7 817.0,164.1 820.0,164.4 823.0,164.7 826.0,165.0 829.0,165.3 832.0,165.5 835.0,165.8 838.0,166.0 841.0,166.2 844.0,166.4 847.0,166.6 850.0,166.8 853.0,166.9 856.0,167.1 859.0,167.2 862.0,167.4 865.0,167.5 868.0,167.6 871.0,167.7 874.0,167.8 877.0,168.0 880.0,168.1 883.0,168.2 886.0,168.3 889.0,168.4 892.0,168.6 895.0,168.7 898.0,168.8 901.0,168.9 904.0,169.0 907.0,169.1 910.0,169.2 913.0,169.3 916.0,169.3 919.0,169.4 922.0,169.5 925.0,169.5 928.0,169.5 931.0,169.6 934.0,169.6 937.0,169.6 940.0,169.7 943.0,169.7 946.0,169.7 949.0,169.8 949.0,170" fill="#b9c2cf" opacity="1.0"/><polygon points="70.0,170 70.0,169.9 73.0,169.9 76.0,169.9 79.0,169.9 82.0,169.8 85.0,169.8 88.0,169.7 91.0,169.7 94.0,169.6 97.0,169.5 100.0,169.4 103.0,169.3 106.0,169.2 109.0,169.1 112.0,169.0 115.0,168.9 118.0,168.7 121.0,168.6 124.0,168.5 127.0,168.3 130.0,168.2 133.0,168.1 136.0,167.9 139.0,167.7 142.0,167.5 145.0,167.3 148.0,167.0 151.0,166.7 154.0,166.3 157.0,165.9 160.0,165.3 163.0,164.7 166.0,164.0 169.0,163.2 172.0,162.4 175.0,161.4 178.0,160.4 181.0,159.4 184.0,158.3 187.0,157.2 190.0,156.1 193.0,155.0 196.0,154.0 199.0,153.0 202.0,152.0 205.0,151.2 208.0,150.3 211.0,149.6 214.0,148.9 217.0,148.2 220.0,147.6 223.0,146.9 226.0,146.4 229.0,145.8 232.0,145.2 235.0,144.6 238.0,144.0 241.0,143.4 244.0,142.9 247.0,142.3 250.0,141.7 253.0,141.2 256.0,140.6 259.0,140.1 262.0,139.6 265.0,139.1 268.0,138.6 271.0,138.1 274.0,137.5 277.0,137.0 280.0,136.4 283.0,135.9 286.0,135.3 289.0,134.6 292.0,133.9 295.0,133.2 298.0,132.5 301.0,131.7 304.0,130.8 307.0,129.8 310.0,128.7 313.0,127.5 316.0,126.1 319.0,124.6 322.0,122.9 325.0,121.0 328.0,118.9 331.0,116.6 334.0,114.1 337.0,111.5 340.0,108.7 343.0,105.8 346.0,102.8 349.0,99.8 352.0,96.9 355.0,93.9 358.0,91.0 361.0,88.3 364.0,85.7 367.0,83.2 370.0,80.9 373.0,78.7 376.0,76.8 379.0,75.0 382.0,73.4 385.0,72.1 388.0,70.9 391.0,69.9 394.0,69.2 397.0,68.7 400.0,68.4 403.0,68.4 406.0,68.6 409.0,69.1 412.0,69.8 415.0,70.6 418.0,71.7 421.0,72.8 424.0,74.0 427.0,75.1 430.0,76.2 433.0,77.2 436.0,78.0 439.0,78.6 442.0,78.9 445.0,79.0 448.0,78.9 448.0,170" fill="#f0b3ae" opacity="1.0"/><polygon points="574.0,170 574.0,57.5 577.0,61.6 580.0,65.7 583.0,69.6 586.0,73.3 589.0,76.8 592.0,80.0 595.0,82.9 598.0,85.6 601.0,87.9 604.0,90.0 607.0,91.8 610.0,93.4 613.0,94.7 616.0,95.8 619.0,96.7 622.0,97.4 625.0,97.9 628.0,98.1 631.0,98.2 634.0,98.1 637.0,97.9 640.0,97.5 643.0,97.0 646.0,96.5 649.0,95.9 652.0,95.3 655.0,94.8 658.0,94.3 661.0,94.0 664.0,93.9 667.0,94.0 670.0,94.4 673.0,95.0 676.0,96.0 679.0,97.2 682.0,98.7 685.0,100.5 688.0,102.5 691.0,104.7 694.0,107.1 697.0,109.6 700.0,112.1 703.0,114.7 706.0,117.3 709.0,119.9 712.0,122.4 715.0,124.8 718.0,127.1 721.0,129.3 724.0,131.4 727.0,133.4 730.0,135.3 733.0,137.1 736.0,138.8 739.0,140.3 742.0,141.9 745.0,143.3 748.0,144.7 751.0,146.0 754.0,147.3 757.0,148.5 760.0,149.7 763.0,150.8 766.0,152.0 769.0,153.1 772.0,154.1 775.0,155.2 778.0,156.1 781.0,157.1 784.0,158.0 787.0,158.8 790.0,159.6 793.0,160.3 796.0,160.9 799.0,161.5 802.0,162.0 805.0,162.5 808.0,162.9 811.0,163.3 814.0,163.7 817.0,164.1 820.0,164.4 823.0,164.7 826.0,165.0 829.0,165.3 832.0,165.5 835.0,165.8 838.0,166.0 841.0,166.2 844.0,166.4 847.0,166.6 850.0,166.8 853.0,166.9 856.0,167.1 859.0,167.2 862.0,167.4 865.0,167.5 868.0,167.6 871.0,167.7 874.0,167.8 877.0,168.0 880.0,168.1 883.0,168.2 886.0,168.3 889.0,168.4 892.0,168.6 895.0,168.7 898.0,168.8 901.0,168.9 904.0,169.0 907.0,169.1 910.0,169.2 913.0,169.3 916.0,169.3 919.0,169.4 922.0,169.5 925.0,169.5 928.0,169.5 931.0,169.6 934.0,169.6 937.0,169.6 940.0,169.7 943.0,169.7 946.0,169.7 949.0,169.8 949.0,170" fill="#f0b3ae" opacity="1.0"/><line x1="60" y1="170" x2="960" y2="170" stroke="#1a2233" stroke-width="1.5"/><g font-size="14" fill="#6b7486" text-anchor="middle"><text x="172" y="192">-10</text><text x="341" y="192">-5</text><text x="510" y="192">+0</text><text x="679" y="192">+5</text><text x="848" y="192">+10</text></g><line x1="571" y1="34" x2="571" y2="178" stroke="#b3392f" stroke-width="2.5"/><text x="571" y="28" font-size="14" font-weight="700" text-anchor="middle" fill="#b3392f">observed +1.8 picks/h</text><text x="500" y="218" font-size="14" fill="#6b7486" text-anchor="middle">median difference luck alone produced, picks per hour</text></svg>
+      <!-- /FIG:noise-5761-5130 -->
+    </div>
+    <div class="step-take warn">Shaded = 6,588 of 10,000 &rarr; <b>p = 0.66</b> &rarr; nothing found. Two thirds of pure-luck worlds beat us.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">2</span><span class="step-title">Sectors 5402 vs 5400</span></div>
+    <p class="step-q">medians 149.9 against 113.3 picks per hour, so a gap of +36.5 (note the wider axis)</p>
+    <div class="step-fig">
+      <!-- FIG:signal-5402-5400 -->
+<svg viewBox="0 0 1000 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"><polygon points="70.0,170 70.0,170.0 73.0,170.0 76.0,170.0 79.0,170.0 82.0,170.0 85.0,170.0 88.0,170.0 91.0,170.0 94.0,170.0 97.0,170.0 100.0,170.0 103.0,170.0 106.0,170.0 109.0,169.9 112.0,169.9 115.0,169.8 118.0,169.8 121.0,169.7 124.0,169.7 127.0,169.6 130.0,169.5 133.0,169.4 136.0,169.3 139.0,169.1 142.0,168.8 145.0,168.5 148.0,168.1 151.0,167.8 154.0,167.4 157.0,166.9 160.0,166.4 163.0,165.9 166.0,165.4 169.0,164.8 172.0,164.2 175.0,163.5 178.0,162.9 181.0,162.2 184.0,161.5 187.0,160.6 190.0,159.6 193.0,158.5 196.0,157.3 199.0,155.9 202.0,154.4 205.0,152.6 208.0,150.8 211.0,148.7 214.0,146.5 217.0,144.1 220.0,141.6 223.0,138.9 226.0,136.0 229.0,133.0 232.0,130.0 235.0,127.0 238.0,124.1 241.0,121.2 244.0,118.3 247.0,115.2 250.0,111.6 253.0,107.4 256.0,102.0 259.0,95.3 262.0,87.2 265.0,77.9 268.0,68.0 271.0,58.1 274.0,49.0 277.0,41.3 280.0,35.4 283.0,31.6 286.0,30.0 289.0,30.4 292.0,32.1 295.0,34.3 298.0,36.2 301.0,37.2 304.0,37.5 307.0,37.8 310.0,39.2 313.0,42.2 316.0,46.3 319.0,50.6 322.0,53.6 325.0,54.6 328.0,53.4 331.0,50.8 334.0,48.3 337.0,47.2 340.0,48.6 343.0,52.7 346.0,58.9 349.0,66.0 352.0,72.8 355.0,78.5 358.0,82.8 361.0,85.8 364.0,88.0 367.0,89.6 370.0,90.9 373.0,91.5 376.0,91.5 379.0,90.7 382.0,89.2 385.0,87.3 388.0,85.4 391.0,84.0 394.0,83.6 397.0,84.4 400.0,86.7 403.0,90.2 406.0,94.9 409.0,100.4 412.0,106.5 415.0,112.9 418.0,119.1 421.0,124.8 424.0,129.9 427.0,134.1 430.0,137.4 433.0,140.1 436.0,142.3 439.0,144.3 442.0,146.1 445.0,147.9 448.0,149.7 451.0,151.5 454.0,153.2 457.0,154.8 460.0,156.2 463.0,157.5 466.0,158.8 469.0,160.1 472.0,161.4 475.0,162.8 478.0,164.1 481.0,165.3 484.0,166.2 487.0,166.8 490.0,167.3 493.0,167.5 496.0,167.7 499.0,167.8 502.0,168.0 505.0,168.2 508.0,168.4 511.0,168.7 514.0,168.9 517.0,169.2 520.0,169.4 523.0,169.6 526.0,169.7 529.0,169.8 532.0,169.8 535.0,169.9 538.0,169.9 541.0,169.9 544.0,169.9 547.0,169.9 550.0,169.9 553.0,169.9 556.0,169.9 559.0,169.9 562.0,170.0 565.0,170.0 568.0,170.0 571.0,170.0 574.0,170.0 577.0,170.0 580.0,170.0 583.0,170.0 586.0,170.0 589.0,170.0 592.0,170.0 595.0,170.0 598.0,170.0 601.0,170.0 604.0,170.0 607.0,170.0 610.0,170.0 613.0,170.0 616.0,170.0 619.0,170.0 622.0,170.0 625.0,170.0 628.0,170.0 631.0,170.0 634.0,170.0 637.0,170.0 640.0,170.0 643.0,170.0 646.0,170.0 649.0,170.0 652.0,170.0 655.0,170.0 658.0,170.0 661.0,170.0 664.0,170.0 667.0,170.0 670.0,170.0 673.0,170.0 676.0,170.0 679.0,170.0 682.0,170.0 685.0,170.0 688.0,170.0 691.0,170.0 694.0,170.0 697.0,170.0 700.0,170.0 703.0,170.0 706.0,170.0 709.0,170.0 712.0,170.0 715.0,170.0 718.0,170.0 721.0,170.0 724.0,170.0 727.0,170.0 730.0,170.0 733.0,170.0 736.0,170.0 739.0,170.0 742.0,170.0 745.0,170.0 748.0,170.0 751.0,170.0 754.0,170.0 757.0,170.0 760.0,170.0 763.0,170.0 766.0,170.0 769.0,170.0 772.0,170.0 775.0,170.0 778.0,170.0 781.0,170.0 784.0,170.0 787.0,170.0 790.0,170.0 793.0,170.0 796.0,170.0 799.0,170.0 802.0,170.0 805.0,170.0 808.0,170.0 811.0,170.0 814.0,170.0 817.0,170.0 820.0,170.0 823.0,170.0 826.0,170.0 829.0,170.0 832.0,170.0 835.0,170.0 838.0,170.0 841.0,170.0 844.0,170.0 847.0,170.0 850.0,170.0 853.0,170.0 856.0,170.0 859.0,170.0 862.0,170.0 865.0,170.0 868.0,170.0 871.0,170.0 874.0,170.0 877.0,170.0 880.0,170.0 883.0,170.0 886.0,170.0 889.0,170.0 892.0,170.0 895.0,170.0 898.0,170.0 901.0,170.0 904.0,170.0 907.0,170.0 910.0,170.0 913.0,170.0 916.0,170.0 919.0,170.0 922.0,170.0 925.0,170.0 928.0,170.0 931.0,170.0 934.0,170.0 937.0,170.0 940.0,170.0 943.0,170.0 946.0,170.0 949.0,170.0 949.0,170" fill="#b9c2cf" opacity="1.0"/><text x="316" y="96" font-size="15" fill="#b3392f" text-anchor="middle">no shuffle ever came out here &#8594;</text><line x1="60" y1="170" x2="960" y2="170" stroke="#1a2233" stroke-width="1.5"/><g font-size="14" fill="#6b7486" text-anchor="middle"><text x="164" y="192">-10</text><text x="321" y="192">+0</text><text x="479" y="192">+10</text><text x="636" y="192">+20</text><text x="793" y="192">+30</text><text x="950" y="192">+40</text></g><line x1="896" y1="34" x2="896" y2="178" stroke="#b3392f" stroke-width="2.5"/><text x="896" y="28" font-size="14" font-weight="700" text-anchor="middle" fill="#b3392f">observed +36.5 picks/h</text><text x="500" y="218" font-size="14" fill="#6b7486" text-anchor="middle">median difference luck alone produced, picks per hour</text></svg>
+      <!-- /FIG:signal-5402-5400 -->
+    </div>
+    <div class="step-take">Shaded = 0 of 10,000 &rarr; <b>p &lt; 0.0001</b> &rarr; real. Write the <b>&lt;</b>: with ten thousand worlds, "fewer than one in ten thousand" is the smallest number this machine can produce.</div>
+  </div>
+
+  <div class="rule"><b>p = the share of luck-worlds whose difference is at least as big as ours.</b> Nothing more, nothing less. Small p → luck is a poor explanation.</div>
+
+  <ul class="myths">
+    <li><s>the probability that my hypothesis is true</s> <b>— it is a property of the luck-worlds, not of your belief</b></li>
+    <li><s>the probability that the result is due to chance</s> <b>— it assumes chance and asks how often chance does this</b></li>
+    <li><s>the importance of the effect</s> <b>— p measures surprise, not size</b></li>
+    <li><s>p = 0.06 means nothing is there</s> <b>— it means this evidence is not enough</b></li>
+    <li><s>p &lt; 0.05 means the finding matters</s> <b>— with 150,000 rows, a 2% effect clears the bar</b></li>
+  </ul>
+
+  <p class="note">A large p-value is a failure to find a difference, not proof of sameness. And the bar (0.05, 0.01) is a convention agreed <b>before</b> looking, priced by what a false alarm costs you.</p>
+</div>
+
+<!-- ============ CARD 2 — choosing a test ============ -->
+
+<!-- ============ CARD 2 — where that picture comes from ============ -->
+<div class="card" id="card2">
+  <h2>Card 2 &mdash; where that picture comes from</h2>
+  <p class="sub">Card 1 built the luck distribution by shuffling. A statistics course reaches the same
+  picture from the other end, and it is worth seeing both, because the second route explains
+  <i>why</i> the first one works. Five steps, in order. Steps 1 to 4 use a made-up population of cats,
+  because there you can see the truth and check every claim. Step 5 comes back to the warehouse.
+  <b>Each step is one slide's worth</b>, so the sequence works on screen as well as on paper.</p>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">1</span><span class="step-title">One sample is not the population</span></div>
+    <p class="step-q">I want the average weight of a cat. I cannot weigh every cat, so I weigh 100 of them.</p>
+    <div class="step-fig">
+      <!-- FIG:one-sample -->
+<svg viewBox="0 0 1000 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"><polygon points="70.0,170 70.0,164.6 73.0,164.2 76.0,163.7 79.0,163.2 82.0,162.7 85.0,162.2 88.0,161.6 91.0,161.0 94.0,160.3 97.0,159.7 100.0,158.9 103.0,158.2 106.0,157.3 109.0,156.4 112.0,155.5 115.0,154.5 118.0,153.4 121.0,152.3 124.0,151.1 127.0,149.8 130.0,148.6 133.0,147.2 136.0,145.9 139.0,144.5 142.0,143.0 145.0,141.6 148.0,140.1 151.0,138.5 154.0,137.0 157.0,135.4 160.0,133.7 163.0,132.0 166.0,130.3 169.0,128.6 172.0,126.8 175.0,125.0 178.0,123.2 181.0,121.4 184.0,119.5 187.0,117.6 190.0,115.7 193.0,113.7 196.0,111.7 199.0,109.7 202.0,107.7 205.0,105.6 208.0,103.5 211.0,101.3 214.0,99.1 217.0,96.9 220.0,94.7 223.0,92.5 226.0,90.3 229.0,88.2 232.0,86.0 235.0,83.9 238.0,81.8 241.0,79.8 244.0,77.8 247.0,75.9 250.0,74.0 253.0,72.2 256.0,70.5 259.0,68.7 262.0,67.0 265.0,65.3 268.0,63.7 271.0,62.0 274.0,60.3 277.0,58.6 280.0,56.9 283.0,55.1 286.0,53.4 289.0,51.8 292.0,50.1 295.0,48.6 298.0,47.0 301.0,45.6 304.0,44.2 307.0,42.9 310.0,41.7 313.0,40.5 316.0,39.5 319.0,38.5 322.0,37.6 325.0,36.7 328.0,35.9 331.0,35.2 334.0,34.6 337.0,34.0 340.0,33.4 343.0,32.9 346.0,32.5 349.0,32.1 352.0,31.7 355.0,31.3 358.0,31.0 361.0,30.7 364.0,30.5 367.0,30.3 370.0,30.1 373.0,30.0 376.0,30.0 379.0,30.0 382.0,30.1 385.0,30.3 388.0,30.6 391.0,30.9 394.0,31.4 397.0,31.9 400.0,32.6 403.0,33.3 406.0,34.2 409.0,35.1 412.0,36.1 415.0,37.1 418.0,38.2 421.0,39.3 424.0,40.4 427.0,41.6 430.0,42.7 433.0,43.8 436.0,45.0 439.0,46.1 442.0,47.2 445.0,48.3 448.0,49.5 451.0,50.6 454.0,51.8 457.0,53.0 460.0,54.2 463.0,55.4 466.0,56.7 469.0,58.0 472.0,59.4 475.0,60.8 478.0,62.2 481.0,63.6 484.0,65.0 487.0,66.3 490.0,67.7 493.0,69.0 496.0,70.4 499.0,71.6 502.0,72.9 505.0,74.1 508.0,75.3 511.0,76.5 514.0,77.7 517.0,78.9 520.0,80.1 523.0,81.3 526.0,82.5 529.0,83.7 532.0,85.0 535.0,86.2 538.0,87.5 541.0,88.8 544.0,90.1 547.0,91.4 550.0,92.7 553.0,93.9 556.0,95.1 559.0,96.3 562.0,97.4 565.0,98.5 568.0,99.6 571.0,100.6 574.0,101.6 577.0,102.6 580.0,103.6 583.0,104.6 586.0,105.6 589.0,106.5 592.0,107.5 595.0,108.6 598.0,109.6 601.0,110.6 604.0,111.7 607.0,112.8 610.0,113.9 613.0,115.0 616.0,116.1 619.0,117.3 622.0,118.4 625.0,119.5 628.0,120.6 631.0,121.8 634.0,122.9 637.0,124.0 640.0,125.0 643.0,126.1 646.0,127.1 649.0,128.1 652.0,129.1 655.0,130.0 658.0,130.9 661.0,131.8 664.0,132.6 667.0,133.4 670.0,134.2 673.0,134.9 676.0,135.6 679.0,136.3 682.0,137.0 685.0,137.7 688.0,138.4 691.0,139.0 694.0,139.7 697.0,140.4 700.0,141.0 703.0,141.7 706.0,142.3 709.0,143.0 712.0,143.6 715.0,144.2 718.0,144.8 721.0,145.3 724.0,145.8 727.0,146.4 730.0,146.9 733.0,147.4 736.0,147.8 739.0,148.3 742.0,148.8 745.0,149.2 748.0,149.7 751.0,150.2 754.0,150.7 757.0,151.2 760.0,151.7 763.0,152.2 766.0,152.7 769.0,153.2 772.0,153.7 775.0,154.1 778.0,154.6 781.0,155.1 784.0,155.5 787.0,155.9 790.0,156.2 793.0,156.6 796.0,156.9 799.0,157.3 802.0,157.6 805.0,157.9 808.0,158.2 811.0,158.5 814.0,158.8 817.0,159.1 820.0,159.4 823.0,159.7 826.0,160.0 829.0,160.3 832.0,160.6 835.0,160.8 838.0,161.1 841.0,161.3 844.0,161.6 847.0,161.8 850.0,162.0 853.0,162.2 856.0,162.3 859.0,162.5 862.0,162.7 865.0,162.9 868.0,163.0 871.0,163.2 874.0,163.4 877.0,163.6 880.0,163.8 883.0,164.0 886.0,164.1 889.0,164.3 892.0,164.5 895.0,164.7 898.0,164.9 901.0,165.1 904.0,165.3 907.0,165.4 910.0,165.6 913.0,165.8 916.0,165.9 919.0,166.1 922.0,166.2 925.0,166.4 928.0,166.5 931.0,166.6 934.0,166.7 937.0,166.8 940.0,166.9 943.0,166.9 946.0,167.0 949.0,167.0 952.0,167.1 955.0,167.1 958.0,167.2 961.0,167.2 961.0,170" fill="#b9c2cf" opacity="1.0"/><polyline points="70.0,156.1 73.0,155.5 76.0,154.9 79.0,154.3 82.0,153.7 85.0,153.0 88.0,152.4 91.0,151.8 94.0,151.1 97.0,150.4 100.0,149.8 103.0,149.1 106.0,148.4 109.0,147.7 112.0,147.1 115.0,146.4 118.0,145.7 121.0,145.0 124.0,144.3 127.0,143.5 130.0,142.8 133.0,142.1 136.0,141.3 139.0,140.6 142.0,139.8 145.0,139.1 148.0,138.3 151.0,137.5 154.0,136.7 157.0,135.9 160.0,135.1 163.0,134.3 166.0,133.4 169.0,132.6 172.0,131.7 175.0,130.8 178.0,129.9 181.0,128.9 184.0,128.0 187.0,127.0 190.0,125.9 193.0,124.9 196.0,123.8 199.0,122.7 202.0,121.6 205.0,120.5 208.0,119.3 211.0,118.1 214.0,116.8 217.0,115.5 220.0,114.2 223.0,112.8 226.0,111.4 229.0,110.0 232.0,108.6 235.0,107.1 238.0,105.5 241.0,104.0 244.0,102.4 247.0,100.7 250.0,99.1 253.0,97.4 256.0,95.7 259.0,93.9 262.0,92.1 265.0,90.3 268.0,88.5 271.0,86.6 274.0,84.8 277.0,82.9 280.0,81.0 283.0,79.0 286.0,77.1 289.0,75.2 292.0,73.2 295.0,71.3 298.0,69.4 301.0,67.4 304.0,65.5 307.0,63.6 310.0,61.7 313.0,59.8 316.0,58.0 319.0,56.2 322.0,54.4 325.0,52.7 328.0,50.9 331.0,49.3 334.0,47.7 337.0,46.1 340.0,44.6 343.0,43.1 346.0,41.7 349.0,40.4 352.0,39.1 355.0,37.9 358.0,36.8 361.0,35.7 364.0,34.7 367.0,33.8 370.0,33.0 373.0,32.3 376.0,31.6 379.0,31.1 382.0,30.6 385.0,30.2 388.0,30.0 391.0,30.0 394.0,30.0 397.0,30.0 400.0,30.0 403.0,30.0 406.0,30.0 409.0,30.1 412.0,30.5 415.0,30.9 418.0,31.4 421.0,32.0 424.0,32.7 427.0,33.4 430.0,34.3 433.0,35.1 436.0,36.1 439.0,37.1 442.0,38.1 445.0,39.2 448.0,40.4 451.0,41.6 454.0,42.8 457.0,44.1 460.0,45.4 463.0,46.8 466.0,48.1 469.0,49.5 472.0,51.0 475.0,52.4 478.0,53.9 481.0,55.4 484.0,56.9 487.0,58.4 490.0,59.9 493.0,61.4 496.0,62.9 499.0,64.5 502.0,66.0 505.0,67.5 508.0,69.0 511.0,70.5 514.0,72.0 517.0,73.5 520.0,75.0 523.0,76.5 526.0,78.0 529.0,79.4 532.0,80.9 535.0,82.3 538.0,83.7 541.0,85.2 544.0,86.6 547.0,88.0 550.0,89.3 553.0,90.7 556.0,92.1 559.0,93.4 562.0,94.8 565.0,96.1 568.0,97.4 571.0,98.7 574.0,100.0 577.0,101.3 580.0,102.6 583.0,103.8 586.0,105.1 589.0,106.3 592.0,107.6 595.0,108.8 598.0,110.0 601.0,111.2 604.0,112.4 607.0,113.6 610.0,114.8 613.0,116.0 616.0,117.1 619.0,118.3 622.0,119.4 625.0,120.6 628.0,121.7 631.0,122.8 634.0,123.8 637.0,124.9 640.0,126.0 643.0,127.0 646.0,128.0 649.0,129.1 652.0,130.1 655.0,131.0 658.0,132.0 661.0,132.9 664.0,133.9 667.0,134.8 670.0,135.7 673.0,136.6 676.0,137.4 679.0,138.2 682.0,139.1 685.0,139.9 688.0,140.6 691.0,141.4 694.0,142.1 697.0,142.8 700.0,143.5 703.0,144.2 706.0,144.9 709.0,145.5 712.0,146.2 715.0,146.8 718.0,147.3 721.0,147.9 724.0,148.5 727.0,149.0 730.0,149.5 733.0,150.0 736.0,150.5 739.0,151.0 742.0,151.4 745.0,151.8 748.0,152.3 751.0,152.7 754.0,153.1 757.0,153.4 760.0,153.8 763.0,154.1 766.0,154.5 769.0,154.8 772.0,155.1 775.0,155.4 778.0,155.7 781.0,156.0 784.0,156.3 787.0,156.5 790.0,156.8 793.0,157.0 796.0,157.2 799.0,157.5 802.0,157.7 805.0,157.9 808.0,158.1 811.0,158.3 814.0,158.5 817.0,158.6 820.0,158.8 823.0,159.0 826.0,159.1 829.0,159.3 832.0,159.4 835.0,159.5 838.0,159.7 841.0,159.8 844.0,159.9 847.0,160.0 850.0,160.1 853.0,160.2 856.0,160.3 859.0,160.4 862.0,160.5 865.0,160.6 868.0,160.7 871.0,160.8 874.0,160.8 877.0,160.9 880.0,161.0 883.0,161.1 886.0,161.1 889.0,161.2 892.0,161.2 895.0,161.3 898.0,161.4 901.0,161.4 904.0,161.5 907.0,161.5 910.0,161.6 913.0,161.7 916.0,161.7 919.0,161.8 922.0,161.8 925.0,161.9 928.0,161.9 931.0,162.0 934.0,162.0 937.0,162.1 940.0,162.1 943.0,162.2 946.0,162.3 949.0,162.3 952.0,162.3 955.0,162.4 958.0,162.4 961.0,162.5" fill="none" stroke="#2757a8" stroke-width="2.5"/><line x1="485.9" y1="170" x2="485.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="911.1" y1="170" x2="911.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="277.1" y1="170" x2="277.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="795.8" y1="170" x2="795.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="380.2" y1="170" x2="380.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="431.7" y1="170" x2="431.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="539.4" y1="170" x2="539.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="659.1" y1="170" x2="659.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="455.8" y1="170" x2="455.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="484.4" y1="170" x2="484.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="465.5" y1="170" x2="465.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="347.3" y1="170" x2="347.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="525.6" y1="170" x2="525.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="109.4" y1="170" x2="109.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="377.8" y1="170" x2="377.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="419.8" y1="170" x2="419.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="497.1" y1="170" x2="497.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="429.0" y1="170" x2="429.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="411.9" y1="170" x2="411.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="308.9" y1="170" x2="308.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="563.6" y1="170" x2="563.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="401.6" y1="170" x2="401.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="668.7" y1="170" x2="668.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="439.1" y1="170" x2="439.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="319.4" y1="170" x2="319.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="325.6" y1="170" x2="325.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="932.5" y1="170" x2="932.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="381.6" y1="170" x2="381.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="314.6" y1="170" x2="314.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="253.2" y1="170" x2="253.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="464.3" y1="170" x2="464.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="531.4" y1="170" x2="531.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="339.4" y1="170" x2="339.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="1071.0" y1="170" x2="1071.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="348.8" y1="170" x2="348.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="441.9" y1="170" x2="441.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="251.8" y1="170" x2="251.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="185.4" y1="170" x2="185.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="316.4" y1="170" x2="316.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="382.1" y1="170" x2="382.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="389.6" y1="170" x2="389.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="649.3" y1="170" x2="649.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="544.9" y1="170" x2="544.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="143.0" y1="170" x2="143.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="593.7" y1="170" x2="593.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="359.2" y1="170" x2="359.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="539.9" y1="170" x2="539.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="715.5" y1="170" x2="715.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="1071.0" y1="170" x2="1071.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="804.4" y1="170" x2="804.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="408.1" y1="170" x2="408.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="308.6" y1="170" x2="308.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="545.6" y1="170" x2="545.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="307.2" y1="170" x2="307.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="249.4" y1="170" x2="249.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="267.8" y1="170" x2="267.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="105.5" y1="170" x2="105.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="439.9" y1="170" x2="439.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="298.2" y1="170" x2="298.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="473.7" y1="170" x2="473.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="489.0" y1="170" x2="489.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="350.2" y1="170" x2="350.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="572.6" y1="170" x2="572.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="594.7" y1="170" x2="594.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="396.6" y1="170" x2="396.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="427.4" y1="170" x2="427.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="618.3" y1="170" x2="618.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="227.2" y1="170" x2="227.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="299.1" y1="170" x2="299.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="589.8" y1="170" x2="589.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="403.9" y1="170" x2="403.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="622.1" y1="170" x2="622.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="186.1" y1="170" x2="186.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="400.1" y1="170" x2="400.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="584.1" y1="170" x2="584.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="469.0" y1="170" x2="469.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="168.3" y1="170" x2="168.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="250.7" y1="170" x2="250.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="387.0" y1="170" x2="387.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="481.1" y1="170" x2="481.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="361.8" y1="170" x2="361.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="120.6" y1="170" x2="120.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="379.6" y1="170" x2="379.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="404.5" y1="170" x2="404.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="469.8" y1="170" x2="469.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="719.8" y1="170" x2="719.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="536.7" y1="170" x2="536.7" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="356.1" y1="170" x2="356.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="426.5" y1="170" x2="426.5" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="558.4" y1="170" x2="558.4" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="358.8" y1="170" x2="358.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="409.8" y1="170" x2="409.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="349.2" y1="170" x2="349.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="461.2" y1="170" x2="461.2" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="328.1" y1="170" x2="328.1" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="361.6" y1="170" x2="361.6" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="195.9" y1="170" x2="195.9" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="449.0" y1="170" x2="449.0" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="379.3" y1="170" x2="379.3" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="387.8" y1="170" x2="387.8" y2="179" stroke="#2757a8" stroke-width="1" opacity="0.55"/><line x1="70" y1="170" x2="960" y2="170" stroke="#1a2233" stroke-width="1.5"/><g font-size="14" fill="#6b7486" text-anchor="middle"><text x="153" y="192">3</text><text x="292" y="192">4</text><text x="432" y="192">5</text><text x="571" y="192">6</text><text x="710" y="192">7</text><text x="849" y="192">8</text></g><line x1="423" y1="34" x2="423" y2="178" stroke="#1c6b3a" stroke-width="2.5"/><text x="415" y="28" font-size="14" font-weight="700" text-anchor="end" fill="#1c6b3a">all cats: 4.94 kg</text><line x1="440" y1="58" x2="440" y2="178" stroke="#b3392f" stroke-width="2.5"/><text x="448" y="52" font-size="14" font-weight="700" text-anchor="start" fill="#b3392f">my 100: 5.06 kg</text><rect x="696" y="50" width="16" height="10" fill="#b9c2cf"/><text x="718" y="59" font-size="14" fill="#6b7486">every cat</text><line x1="696" y1="78" x2="712" y2="78" stroke="#2757a8" stroke-width="2.5"/><text x="718" y="82" font-size="14" fill="#6b7486">the 100 I weighed (ticks below)</text><text x="500" y="218" font-size="14" fill="#6b7486" text-anchor="middle">weight of one cat, kg</text></svg>
+      <!-- /FIG:one-sample -->
+    </div>
+    <div class="step-take warn">The shape of my 100 looks like the shape of the population. The average still misses by 0.12 kg, and nothing in my data says so.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">2</span><span class="step-title">What if I could do the whole study again?</span></div>
+    <p class="step-q">Imagine 2,000 other people each weighing their own <span class="live-n">100</span> cats. Their averages form a distribution of their own. <b>Drag <i>n</i> and watch it.</b></p>
+    <div class="knobs">
+      <label>cats per study <input type="range" id="clt-n" min="0" max="7" step="1" value="4"><output id="clt-n-out">100</output></label>
+      <span style="color:var(--muted)">two bands, one shared scale</span>
+    </div>
+    <div class="step-fig"><svg id="clt-fig" viewBox="0 0 1000 330" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"></svg></div>
+    <p class="live-read" id="clt-read"></p>
+    <div class="step-take">This is the central limit theorem. It does <b>not</b> say averages drift towards the truth, they are centred on it from the start. What it gives you is the <b>shape</b> (a bell, whatever the population looks like) and the <b>width</b>: &sigma; divided by the square root of n. Four times the cats, half the width.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">3</span><span class="step-title">So I can say how wrong I probably am</span></div>
+    <p class="step-q">Turn that width into a range around my own average and call it a confidence interval. Each bar below is one study's interval. The green line is the one true average, and it never moves.</p>
+    <div class="knobs">
+      <label>cats per study <input type="range" id="ci-n" min="0" max="7" step="1" value="4"><output id="ci-n-out">100</output></label>
+      <label>confidence <input type="range" id="ci-conf" min="0" max="3" step="1" value="2"><output id="ci-conf-out">95%</output></label>
+      <button id="ci-again" type="button">draw another 40</button>
+    </div>
+    <div class="step-fig"><svg id="ci-fig" viewBox="0 0 1000 340" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"></svg></div>
+    <p class="live-read" id="ci-read"></p>
+    <div class="step-take">Read the picture, not the slogan. <b>The truth does not move; the bars do.</b> "95% confident" is a statement about the bars: build them this way forever and 95% of them will cover the truth. It is not a 95% chance that this one bar is right, and it is not the range a single cat's weight falls in.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">4</span><span class="step-title">And you do not need the formula at all</span></div>
+    <p class="step-q">Step 2 imagined 2,000 other studies. I cannot run them. But I can treat my own 100 cats as a stand-in for the population and draw 100 out of them again and again, <i>with replacement</i>. That is the <b>bootstrap</b>.</p>
+    <div class="step-fig">
+      <!-- FIG:bootstrap -->
+<svg viewBox="0 0 1000 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"><polygon points="90.0,170 90.0,170.0 93.0,169.9 96.0,169.9 99.0,169.9 102.0,169.9 105.0,169.8 108.0,169.8 111.0,169.7 114.0,169.7 117.0,169.6 120.0,169.6 123.0,169.6 126.0,169.5 129.0,169.5 132.0,169.5 135.0,169.5 138.0,169.5 141.0,169.5 144.0,169.5 147.0,169.5 150.0,169.5 153.0,169.5 156.0,169.5 159.0,169.5 162.0,169.5 165.0,169.5 168.0,169.4 171.0,169.3 174.0,169.3 177.0,169.2 180.0,169.1 183.0,169.0 186.0,168.9 189.0,168.7 192.0,168.6 195.0,168.5 198.0,168.3 201.0,168.2 204.0,168.0 207.0,167.8 210.0,167.6 213.0,167.4 216.0,167.1 219.0,166.8 222.0,166.5 225.0,166.1 228.0,165.7 231.0,165.3 234.0,164.8 237.0,164.3 240.0,163.8 243.0,163.3 246.0,162.7 249.0,162.1 252.0,161.5 255.0,160.9 258.0,160.3 261.0,159.7 264.0,159.0 267.0,158.3 270.0,157.6 273.0,156.7 276.0,155.9 279.0,154.9 282.0,153.9 285.0,152.8 288.0,151.6 291.0,150.4 294.0,149.0 297.0,147.7 300.0,146.3 303.0,144.9 306.0,143.4 309.0,141.9 312.0,140.4 315.0,138.8 318.0,137.1 321.0,135.4 324.0,133.6 327.0,131.8 330.0,129.8 333.0,127.9 336.0,125.8 339.0,123.8 342.0,121.8 345.0,119.8 348.0,117.8 351.0,115.8 354.0,113.8 357.0,111.9 360.0,109.9 363.0,108.0 366.0,105.9 369.0,103.8 372.0,101.6 375.0,99.2 378.0,96.8 381.0,94.2 384.0,91.5 387.0,88.6 390.0,85.8 393.0,82.9 396.0,79.9 399.0,77.0 402.0,74.2 405.0,71.4 408.0,68.7 411.0,66.0 414.0,63.4 417.0,60.9 420.0,58.4 423.0,56.0 426.0,53.7 429.0,51.4 432.0,49.2 435.0,47.1 438.0,45.1 441.0,43.1 444.0,41.2 447.0,39.4 450.0,37.7 453.0,36.2 456.0,34.8 459.0,33.5 462.0,32.4 465.0,31.5 468.0,30.9 471.0,30.4 474.0,30.1 477.0,30.0 480.0,30.1 483.0,30.2 486.0,30.5 489.0,30.9 492.0,31.3 495.0,31.7 498.0,32.1 501.0,32.5 504.0,32.9 507.0,33.2 510.0,33.5 513.0,33.9 516.0,34.2 519.0,34.5 522.0,34.9 525.0,35.3 528.0,35.8 531.0,36.5 534.0,37.3 537.0,38.3 540.0,39.5 543.0,40.9 546.0,42.5 549.0,44.4 552.0,46.5 555.0,48.7 558.0,51.0 561.0,53.4 564.0,55.9 567.0,58.3 570.0,60.7 573.0,62.9 576.0,65.1 579.0,67.2 582.0,69.2 585.0,71.0 588.0,72.8 591.0,74.6 594.0,76.3 597.0,78.1 600.0,79.9 603.0,81.7 606.0,83.7 609.0,85.7 612.0,87.7 615.0,89.8 618.0,92.0 621.0,94.1 624.0,96.3 627.0,98.5 630.0,100.7 633.0,103.0 636.0,105.3 639.0,107.6 642.0,109.9 645.0,112.2 648.0,114.6 651.0,116.9 654.0,119.1 657.0,121.3 660.0,123.4 663.0,125.4 666.0,127.3 669.0,129.2 672.0,131.0 675.0,132.7 678.0,134.3 681.0,135.8 684.0,137.2 687.0,138.6 690.0,139.9 693.0,141.1 696.0,142.2 699.0,143.2 702.0,144.2 705.0,145.2 708.0,146.2 711.0,147.2 714.0,148.2 717.0,149.2 720.0,150.3 723.0,151.3 726.0,152.4 729.0,153.5 732.0,154.6 735.0,155.6 738.0,156.6 741.0,157.5 744.0,158.3 747.0,159.1 750.0,159.9 753.0,160.6 756.0,161.2 759.0,161.8 762.0,162.4 765.0,162.9 768.0,163.4 771.0,163.8 774.0,164.2 777.0,164.6 780.0,164.9 783.0,165.2 786.0,165.5 789.0,165.8 792.0,166.0 795.0,166.3 798.0,166.5 801.0,166.8 804.0,167.0 807.0,167.3 810.0,167.5 813.0,167.7 816.0,167.9 819.0,168.1 822.0,168.2 825.0,168.4 828.0,168.5 831.0,168.5 834.0,168.6 837.0,168.7 840.0,168.7 843.0,168.8 846.0,168.9 849.0,168.9 852.0,169.0 855.0,169.1 858.0,169.2 861.0,169.2 864.0,169.3 867.0,169.3 870.0,169.4 873.0,169.4 876.0,169.4 879.0,169.5 882.0,169.5 885.0,169.5 888.0,169.5 891.0,169.5 894.0,169.5 897.0,169.6 900.0,169.6 903.0,169.6 906.0,169.6 909.0,169.6 912.0,169.7 915.0,169.7 918.0,169.7 921.0,169.8 924.0,169.8 927.0,169.9 930.0,169.9 933.0,169.9 936.0,169.9 939.0,169.9 939.0,170" fill="#b9c2cf" opacity="1.0"/><line x1="301" y1="164" x2="713" y2="164" stroke="#2757a8" stroke-width="3"/><line x1="301" y1="152" x2="301" y2="176" stroke="#2757a8" stroke-width="2"/><line x1="713" y1="152" x2="713" y2="176" stroke="#2757a8" stroke-width="2"/><line x1="60" y1="170" x2="970" y2="170" stroke="#1a2233" stroke-width="1.5"/><g font-size="14" fill="#6b7486" text-anchor="middle"><text x="130" y="192">4.6</text><text x="292" y="192">4.8</text><text x="454" y="192">5.0</text><text x="616" y="192">5.2</text><text x="778" y="192">5.4</text></g><line x1="503" y1="34" x2="503" y2="178" stroke="#b3392f" stroke-width="2.5"/><text x="503" y="28" font-size="14" font-weight="700" text-anchor="middle" fill="#b3392f">my average: 5.06</text><line x1="407" y1="62" x2="407" y2="178" stroke="#1c6b3a" stroke-width="2.5"/><text x="399" y="56" font-size="14" font-weight="700" text-anchor="end" fill="#1c6b3a">the truth: 4.94</text><text x="794" y="120" font-size="14" font-weight="700" fill="#2757a8" text-anchor="middle">bootstrap 95%:</text><text x="794" y="138" font-size="14" font-weight="700" fill="#2757a8" text-anchor="middle">4.81 to 5.32</text><text x="500" y="218" font-size="14" fill="#6b7486" text-anchor="middle">10,000 averages of my own 100 cats, drawn with replacement</text></svg>
+      <!-- /FIG:bootstrap -->
+    </div>
+    <div class="step-take">Bootstrap interval 4.81 to 5.32, formula interval 4.80 to 5.32. Same answer, no algebra, and it works for medians, ratios and p90 where the formula runs out. Same trick as card 1's shuffle: when you cannot do the maths, simulate.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">5</span><span class="step-title">The same machinery answers "two groups, or one?"</span></div>
+    <p class="step-q">Now the warehouse, on the same pair of sectors as card 1. One thing changes here and it matters: card 1 shuffled <b>medians</b>, this panel shuffles <b>means</b>, because the mean is the summary the textbook formula covers. So the numbers below are not card 1's numbers, and they should not be: the gap of means is +3.5 picks per hour where the gap of medians was +1.8. The verdict is the same either way, which is the point. Here are the shuffle and the formula, drawn on top of each other.</p>
+    <div class="step-fig">
+      <!-- FIG:shuffle-vs-formula -->
+<svg viewBox="0 0 1000 230" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Avenir Next, Segoe UI, system-ui, sans-serif"><polygon points="70.0,170 70.0,170.0 73.0,169.9 76.0,169.9 79.0,169.9 82.0,169.9 85.0,169.8 88.0,169.8 91.0,169.7 94.0,169.7 97.0,169.6 100.0,169.5 103.0,169.4 106.0,169.4 109.0,169.3 112.0,169.2 115.0,169.1 118.0,169.0 121.0,168.8 124.0,168.7 127.0,168.6 130.0,168.5 133.0,168.4 136.0,168.2 139.0,168.1 142.0,168.0 145.0,167.8 148.0,167.7 151.0,167.6 154.0,167.4 157.0,167.3 160.0,167.1 163.0,167.0 166.0,166.8 169.0,166.7 172.0,166.5 175.0,166.3 178.0,166.2 181.0,166.0 184.0,165.8 187.0,165.6 190.0,165.4 193.0,165.2 196.0,165.0 199.0,164.7 202.0,164.5 205.0,164.2 208.0,163.9 211.0,163.6 214.0,163.2 217.0,162.8 220.0,162.4 223.0,161.8 226.0,161.2 229.0,160.6 232.0,159.9 235.0,159.1 238.0,158.3 241.0,157.4 244.0,156.5 247.0,155.5 250.0,154.6 253.0,153.7 256.0,152.7 259.0,151.8 262.0,150.8 265.0,149.9 268.0,149.0 271.0,148.0 274.0,147.0 277.0,146.0 280.0,145.0 283.0,143.9 286.0,142.8 289.0,141.7 292.0,140.5 295.0,139.3 298.0,138.0 301.0,136.7 304.0,135.3 307.0,133.9 310.0,132.5 313.0,130.9 316.0,129.4 319.0,127.7 322.0,126.0 325.0,124.3 328.0,122.4 331.0,120.5 334.0,118.6 337.0,116.6 340.0,114.6 343.0,112.5 346.0,110.4 349.0,108.2 352.0,106.0 355.0,103.8 358.0,101.5 361.0,99.1 364.0,96.7 367.0,94.3 370.0,91.8 373.0,89.3 376.0,86.8 379.0,84.3 382.0,81.8 385.0,79.4 388.0,77.0 391.0,74.7 394.0,72.4 397.0,70.1 400.0,67.9 403.0,65.7 406.0,63.6 409.0,61.5 412.0,59.5 415.0,57.6 418.0,55.8 421.0,54.1 424.0,52.6 427.0,51.2 430.0,49.9 433.0,48.8 436.0,47.8 439.0,47.0 442.0,46.3 445.0,45.7 448.0,45.1 451.0,44.6 454.0,44.0 457.0,43.3 460.0,42.6 463.0,41.8 466.0,40.9 469.0,39.8 472.0,38.7 475.0,37.6 478.0,36.4 481.0,35.2 484.0,34.1 487.0,33.1 490.0,32.2 493.0,31.4 496.0,30.8 499.0,30.4 502.0,30.1 505.0,30.0 508.0,30.0 511.0,30.2 514.0,30.5 517.0,30.9 520.0,31.4 523.0,32.0 526.0,32.6 529.0,33.2 532.0,33.8 535.0,34.5 538.0,35.1 541.0,35.8 544.0,36.4 547.0,37.1 550.0,37.9 553.0,38.7 556.0,39.6 559.0,40.6 562.0,41.6 565.0,42.8 568.0,44.1 571.0,45.5 574.0,47.0 577.0,48.6 580.0,50.4 583.0,52.2 586.0,54.0 589.0,56.0 592.0,58.0 595.0,60.0 598.0,62.1 601.0,64.1 604.0,66.2 607.0,68.2 610.0,70.2 613.0,72.2 616.0,74.2 619.0,76.0 622.0,77.9 625.0,79.7 628.0,81.4 631.0,83.1 634.0,84.8 637.0,86.5 640.0,88.2 643.0,89.9 646.0,91.6 649.0,93.4 652.0,95.3 655.0,97.3 658.0,99.4 661.0,101.6 664.0,103.8 667.0,106.1 670.0,108.4 673.0,110.7 676.0,112.9 679.0,115.1 682.0,117.2 685.0,119.2 688.0,121.0 691.0,122.8 694.0,124.4 697.0,125.9 700.0,127.4 703.0,128.7 706.0,130.0 709.0,131.3 712.0,132.5 715.0,133.7 718.0,134.9 721.0,136.1 724.0,137.3 727.0,138.6 730.0,139.8 733.0,141.0 736.0,142.2 739.0,143.4 742.0,144.6 745.0,145.7 748.0,146.8 751.0,147.9 754.0,148.9 757.0,149.8 760.0,150.7 763.0,151.6 766.0,152.4 769.0,153.1 772.0,153.9 775.0,154.6 778.0,155.3 781.0,155.9 784.0,156.6 787.0,157.2 790.0,157.9 793.0,158.5 796.0,159.1 799.0,159.7 802.0,160.3 805.0,160.8 808.0,161.3 811.0,161.8 814.0,162.2 817.0,162.6 820.0,163.0 823.0,163.4 826.0,163.8 829.0,164.1 832.0,164.5 835.0,164.8 838.0,165.1 841.0,165.4 844.0,165.7 847.0,166.0 850.0,166.3 853.0,166.5 856.0,166.8 859.0,167.0 862.0,167.2 865.0,167.4 868.0,167.6 871.0,167.8 874.0,168.0 877.0,168.2 880.0,168.3 883.0,168.4 886.0,168.6 889.0,168.7 892.0,168.8 895.0,168.9 898.0,169.0 901.0,169.1 904.0,169.2 907.0,169.3 910.0,169.4 913.0,169.5 916.0,169.6 919.0,169.7 922.0,169.7 925.0,169.8 928.0,169.8 931.0,169.9 934.0,169.9 937.0,169.9 940.0,169.9 943.0,170.0 946.0,170.0 949.0,170.0 949.0,170" fill="#b9c2cf" opacity="1.0"/><polygon points="70.0,170 70.0,170.0 73.0,169.9 76.0,169.9 79.0,169.9 82.0,169.9 85.0,169.8 88.0,169.8 91.0,169.7 94.0,169.7 97.0,169.6 100.0,169.5 103.0,169.4 106.0,169.4 109.0,169.3 112.0,169.2 115.0,169.1 118.0,169.0 121.0,168.8 124.0,168.7 127.0,168.6 130.0,168.5 133.0,168.4 136.0,168.2 139.0,168.1 142.0,168.0 145.0,167.8 148.0,167.7 151.0,167.6 154.0,167.4 157.0,167.3 160.0,167.1 163.0,167.0 166.0,166.8 169.0,166.7 172.0,166.5 175.0,166.3 178.0,166.2 181.0,166.0 184.0,165.8 187.0,165.6 190.0,165.4 193.0,165.2 196.0,165.0 199.0,164.7 202.0,164.5 205.0,164.2 208.0,163.9 211.0,163.6 214.0,163.2 217.0,162.8 220.0,162.4 223.0,161.8 226.0,161.2 229.0,160.6 232.0,159.9 235.0,159.1 238.0,158.3 241.0,157.4 244.0,156.5 247.0,155.5 250.0,154.6 253.0,153.7 256.0,152.7 259.0,151.8 262.0,150.8 265.0,149.9 268.0,149.0 271.0,148.0 274.0,147.0 277.0,146.0 280.0,145.0 283.0,143.9 286.0,142.8 289.0,141.7 292.0,140.5 295.0,139.3 298.0,138.0 301.0,136.7 304.0,135.3 307.0,133.9 310.0,132.5 313.0,130.9 316.0,129.4 319.0,127.7 322.0,126.0 325.0,124.3 328.0,122.4 331.0,120.5 334.0,118.6 337.0,116.6 340.0,114.6 343.0,112.5 346.0,110.4 349.0,108.2 352.0,106.0 355.0,103.8 358.0,101.5 361.0,99.1 364.0,96.7 367.0,94.3 370.0,91.8 373.0,89.3 376.0,86.8 379.0,84.3 382.0,81.8 385.0,79.4 388.0,77.0 391.0,74.7 394.0,72.4 397.0,70.1 400.0,67.9 400.0,170" fill="#f0b3ae" opacity="1.0"/><polygon points="622.0,170 622.0,77.9 625.0,79.7 628.0,81.4 631.0,83.1 634.0,84.8 637.0,86.5 640.0,88.2 643.0,89.9 646.0,91.6 649.0,93.4 652.0,95.3 655.0,97.3 658.0,99.4 661.0,101.6 664.0,103.8 667.0,106.1 670.0,108.4 673.0,110.7 676.0,112.9 679.0,115.1 682.0,117.2 685.0,119.2 688.0,121.0 691.0,122.8 694.0,124.4 697.0,125.9 700.0,127.4 703.0,128.7 706.0,130.0 709.0,131.3 712.0,132.5 715.0,133.7 718.0,134.9 721.0,136.1 724.0,137.3 727.0,138.6 730.0,139.8 733.0,141.0 736.0,142.2 739.0,143.4 742.0,144.6 745.0,145.7 748.0,146.8 751.0,147.9 754.0,148.9 757.0,149.8 760.0,150.7 763.0,151.6 766.0,152.4 769.0,153.1 772.0,153.9 775.0,154.6 778.0,155.3 781.0,155.9 784.0,156.6 787.0,157.2 790.0,157.9 793.0,158.5 796.0,159.1 799.0,159.7 802.0,160.3 805.0,160.8 808.0,161.3 811.0,161.8 814.0,162.2 817.0,162.6 820.0,163.0 823.0,163.4 826.0,163.8 829.0,164.1 832.0,164.5 835.0,164.8 838.0,165.1 841.0,165.4 844.0,165.7 847.0,166.0 850.0,166.3 853.0,166.5 856.0,166.8 859.0,167.0 862.0,167.2 865.0,167.4 868.0,167.6 871.0,167.8 874.0,168.0 877.0,168.2 880.0,168.3 883.0,168.4 886.0,168.6 889.0,168.7 892.0,168.8 895.0,168.9 898.0,169.0 901.0,169.1 904.0,169.2 907.0,169.3 910.0,169.4 913.0,169.5 916.0,169.6 919.0,169.7 922.0,169.7 925.0,169.8 928.0,169.8 931.0,169.9 934.0,169.9 937.0,169.9 940.0,169.9 943.0,170.0 946.0,170.0 949.0,170.0 949.0,170" fill="#f0b3ae" opacity="1.0"/><polyline points="70.0,169.7 76.3,169.6 82.6,169.6 88.9,169.5 95.1,169.4 101.4,169.3 107.7,169.2 114.0,169.0 120.3,168.9 126.6,168.7 132.9,168.5 139.1,168.2 145.4,167.9 151.7,167.6 158.0,167.3 164.3,166.9 170.6,166.4 176.9,165.9 183.1,165.3 189.4,164.6 195.7,163.9 202.0,163.1 208.3,162.2 214.6,161.2 220.9,160.1 227.1,159.0 233.4,157.7 239.7,156.2 246.0,154.7 252.3,153.0 258.6,151.2 264.9,149.2 271.1,147.1 277.4,144.9 283.7,142.4 290.0,139.9 296.3,137.2 302.6,134.3 308.9,131.2 315.1,128.1 321.4,124.7 327.7,121.2 334.0,117.6 340.3,113.9 346.6,110.0 352.9,106.1 359.1,102.0 365.4,97.9 371.7,93.7 378.0,89.5 384.3,85.2 390.6,81.0 396.9,76.8 403.1,72.6 409.4,68.5 415.7,64.4 422.0,60.5 428.3,56.7 434.6,53.1 440.9,49.7 447.1,46.5 453.4,43.5 459.7,40.8 466.0,38.3 472.3,36.2 478.6,34.3 484.9,32.8 491.1,31.6 497.4,30.7 503.7,30.2 510.0,30.0 516.3,30.2 522.6,30.7 528.9,31.6 535.1,32.8 541.4,34.3 547.7,36.2 554.0,38.3 560.3,40.8 566.6,43.5 572.9,46.5 579.1,49.7 585.4,53.1 591.7,56.7 598.0,60.5 604.3,64.4 610.6,68.5 616.9,72.6 623.1,76.8 629.4,81.0 635.7,85.2 642.0,89.5 648.3,93.7 654.6,97.9 660.9,102.0 667.1,106.1 673.4,110.0 679.7,113.9 686.0,117.6 692.3,121.2 698.6,124.7 704.9,128.1 711.1,131.2 717.4,134.3 723.7,137.2 730.0,139.9 736.3,142.4 742.6,144.9 748.9,147.1 755.1,149.2 761.4,151.2 767.7,153.0 774.0,154.7 780.3,156.2 786.6,157.7 792.9,159.0 799.1,160.1 805.4,161.2 811.7,162.2 818.0,163.1 824.3,163.9 830.6,164.6 836.9,165.3 843.1,165.9 849.4,166.4 855.7,166.9 862.0,167.3 868.3,167.6 874.6,167.9 880.9,168.2 887.1,168.5 893.4,168.7 899.7,168.9 906.0,169.0 912.3,169.2 918.6,169.3 924.9,169.4 931.1,169.5 937.4,169.6 943.7,169.6 950.0,169.7" fill="none" stroke="#1c6b3a" stroke-width="3" stroke-dasharray="7 5"/><line x1="60" y1="170" x2="960" y2="170" stroke="#1a2233" stroke-width="1.5"/><g font-size="14" fill="#6b7486" text-anchor="middle"><text x="196" y="192">-10</text><text x="353" y="192">-5</text><text x="510" y="192">+0</text><text x="667" y="192">+5</text><text x="824" y="192">+10</text></g><line x1="620" y1="36" x2="620" y2="178" stroke="#b3392f" stroke-width="2.5"/><text x="628" y="30" font-size="14" font-weight="700" text-anchor="start" fill="#b3392f">observed +3.5</text><text x="221" y="58" font-size="14" font-weight="700" fill="#1c6b3a" text-anchor="middle">dashed: the formula</text><text x="221" y="78" font-size="14" fill="#6b7486" text-anchor="middle">grey: 10,000 shuffles</text><text x="500" y="218" font-size="14" fill="#6b7486" text-anchor="middle">difference between the two piles, picks per hour</text></svg>
+      <!-- /FIG:shuffle-vs-formula -->
+    </div>
+    <div class="step-take">Shuffling says the width is 3.90, the formula says 3.99. The p-values are 0.37 and 0.38, and card 1's shuffle of medians said 0.66. Three machines, one verdict: nothing found. <b>A named test is not a different kind of evidence from the shuffle. It is the same picture, drawn by algebra instead of by brute force.</b></div>
+  </div>
+
+  <div class="rule">The whole chain in one line: <b>an average is a random thing with a known width</b> &rarr; so you can say how far the truth plausibly sits from your estimate &rarr; so you can ask how odd your gap would be if the two groups were really one. That last question is the p-value.</div>
+
+  <ul class="myths">
+    <li><s>there is a 95% chance the true average is inside my interval</s> <b>&mdash; the truth does not move, the interval does. 95% of intervals built this way cover it (step 3)</b></li>
+    <li><s>95% of cats weigh between 4.72 and 5.19 kg</s> <b>&mdash; that is roughly the range for the <i>average</i> of 100 cats. Single cats run 3.0 to 7.7 kg, about ten times wider (step 2)</b></li>
+    <li><s>a big p-value means the two groups are probably the same</s> <b>&mdash; it means a gap like ours is unremarkable when they are the same. Card 1, myth one</b></li>
+    <li><s>the central limit theorem says averages drift towards the truth</s> <b>&mdash; they are centred on it already. The theorem gives the shape and the width (step 2)</b></li>
+  </ul>
+
+  <p class="note">Measured, not asserted: over 2,000 simulated studies at n = 100, <b>94.7%</b> of these intervals contained the true average, which is the 95% the method promises. Every drawn figure on this card comes from <code>concept-cards-figures.ipynb</code>. The two live panels build their own population in your browser, which is why their truth sits at 4.93 kg where the drawn ones say 4.94: two simulations of the same world, two slightly different answers. That gap is the whole subject of the card.</p>
+</div>
+
+<div class="card" id="card3">
+  <h2>Card 3 &mdash; choosing a test without a PhD</h2>
+  <p class="sub">Before choosing one, it helps to see that they are all the same procedure. <b>Every test on these cards is these five steps</b>, and a named test is just steps 2 and 3 solved in advance.</p>
+
+  <ol class="myths recipe">
+    <li><b>A claim worth disbelieving.</b> "These two groups are really one group." That is the null hypothesis.</li>
+    <li><b>One number that would be large if the claim were false.</b> A difference of means, a difference of medians, a pile of counts. That is the test statistic.</li>
+    <li><b>The spread that number would have if the claim were true.</b> Shuffle the labels yourself (card 1), or let a formula tell you (card 2, step 5).</li>
+    <li><b>Where your real number lands in that spread.</b> The share of that world at least as extreme as yours: the p-value.</li>
+    <li><b>A bar you agreed on before looking, and a verdict</b> that carries the effect size next to it.</li>
+  </ol>
+
+  <p class="note">So the tests below differ in exactly two places: <b>which number they use for step 2</b>, and <b>how they get the spread in step 3</b>. Nothing else.</p>
+
+
+  <div class="tree">
+    <div class="branch">
+      <div class="q">Comparing two groups of <b>numbers</b><small>times, amounts, prices, durations</small></div>
+      <div class="arrow">&#9654;</div>
+      <div class="pick strong">stats.ttest_ind(a, b)</div>
+      <div class="why"><b>Start here.</b> It compares the two <b>means</b>, it is one line, and it is what everyone else will have run. At the sample sizes we work with it behaves itself even on a skewed column, because an average of thousands of values is well behaved whatever the values look like (card 2, step 2).</div>
+    </div>
+    <div class="branch">
+      <div class="q">&hellip;and the column has a <b>long tail</b><small>a few values hundreds of times the typical one</small></div>
+      <div class="arrow">&#9654;</div>
+      <div class="pick">stats.mannwhitneyu(a, b)</div>
+      <div class="why">A <b>second opinion</b>, run beside the t-test rather than instead of it. It puts every value in order and compares ranks, so one twenty-five-minute pause counts once. Reach for it when the mean stops describing the typical case: on our pick times the mean is 11.1 s and the typical pick is 6.6 s.</div>
+    </div>
+    <div class="branch">
+      <div class="q">Comparing <b>shares</b> of yes/no counts<small>error rates, conversion, defect share</small></div>
+      <div class="arrow">&#9654;</div>
+      <div class="pick">stats.chi2_contingency(table)</div>
+      <div class="why">Feed it a contingency table of <b>raw counts</b>, one row per group, one column per outcome. Never percentages. Inside, it pools both groups into one rate, works out how many wrong scans each group would get at that shared rate, and adds up how far the real counts sit from those expectations.</div>
+    </div>
+    <div class="branch">
+      <div class="q">Comparing a <b>number against a number</b><small>task size against pace, weight against time</small></div>
+      <div class="arrow">&#9654;</div>
+      <div class="pick weak">cut it into groups first</div>
+      <div class="why">None of the tests above take two columns of numbers. Turn one of them into groups (big tasks against small ones, heavy against light) and you are back on this map. <b>Where you cut is a decision you must defend</b>: a split at the median asks a different question from a split at the top quartile, and "no effect" can simply mean "no effect the way I first cut it". This is the shape of HW1 Part 2's first hypothesis.</div>
+    </div>
+    <div class="branch">
+      <div class="q">Not sure / the metric is unusual<small>medians, ratios, p90, anything home-made</small></div>
+      <div class="arrow">&#9654;</div>
+      <div class="pick">permutation test</div>
+      <div class="why">Shuffle the labels 10,000 times and count. Always legal, works for any metric you can compute, and you can explain it to a manager in one sentence.</div>
+    </div>
+  </div>
+
+  <p class="note"><b>And when the first two disagree?</b> That is information, not a menu. They summarise the column differently, so a wide gap between them means the two summaries tell different stories. Night against day in demo 3: the t-test says p = 0.38 and the mean is 1.3% slower at night, the rank test says p = 0.00004 and the median is 2.0% faster. Nothing is broken. The groups are simply so close that the choice of summary decides the answer, which is itself the verdict. <b>Report both, and never go shopping for the friendlier one.</b></p>
+  <div class="rule">The test must match the data, and the number you report must match the decision. Scipy spells them all in one line each &mdash; <b>choosing what to report is the skill, not typing</b>.</div>
+  <div class="rule warn">And no test at all is legal before you have answered the earlier question: <b>does my metric measure the thing I mean?</b> See card 3.</div>
+
+  <p class="note">Two more habits that travel with the choice: report the <b>effect size</b> next to the p-value, and name what <b>else</b> differs between the groups (the confounder check).</p>
+</div>
+
+<!-- ============ CARD 3 — the SmallParts ambush ============ -->
+<div class="card" id="card4">
+  <h2>Card 4 &mdash; what a wrong scan actually records</h2>
+  <p class="sub">One cell visit: the worker was sent for a <b>small part</b>, grabbed the fat box next to it first, then scanned the right one. Same three rows, read two ways.</p>
+
+  <div class="lane-head">
+    <span class="lane-num">1</span>
+    <span class="lane-title">The obvious metric</span>
+    <span class="lane-sub">split the scans by the tag of the item in the row</span>
+  </div>
+  <div class="lane">
+    <div class="slot">
+      <div class="slot-cap">in — three rows of one cell visit</div>
+      <table class="df">
+        <tr><th>event_type</th><th>item_id</th><th>tag in the row</th></tr>
+        <tr><td>ScanCell</td><td>—</td><td>—</td></tr>
+        <tr><td>PickWrongItem</td><td>3014677…</td><td class="bad">plain (the fat box!)</td></tr>
+        <tr><td>PickCorrectItem</td><td>1679524…</td><td>SmallParts</td></tr>
+      </table>
+    </div>
+    <div class="op">
+      <span class="code">groupby(tag of the scanned item)</span>
+      <div class="shaft">───────▶</div>
+    </div>
+    <div class="slot">
+      <div class="slot-cap">out — the confusion is filed under "plain"</div>
+      <table class="df">
+        <tr><th>group</th><th>wrong-scan share</th></tr>
+        <tr><td>plain items</td><td>15.2%</td></tr>
+        <tr><td>small parts</td><td>14.5%</td></tr>
+      </table>
+      <div class="rows bad">ratio 0.95 — "small parts fail less"</div>
+    </div>
+  </div>
+
+  <div class="lane-head">
+    <span class="lane-num b">2</span>
+    <span class="lane-title">Per cell visit</span>
+    <span class="lane-sub">the hunted item is the one the successful pick reveals</span>
+  </div>
+  <div class="lane">
+    <div class="slot">
+      <div class="slot-cap">in — the same three rows</div>
+      <table class="df">
+        <tr><th>event_type</th><th>item_id</th><th>role in the visit</th></tr>
+        <tr><td>ScanCell</td><td>—</td><td>arrived</td></tr>
+        <tr><td>PickWrongItem</td><td>3014677…</td><td class="hl">a confusion</td></tr>
+        <tr><td>PickCorrectItem</td><td>1679524…</td><td class="good">the hunted item → SmallParts</td></tr>
+      </table>
+    </div>
+    <div class="op">
+      <span class="code">groupby(["task_id", "cell_id"])</span>
+      <div class="shaft">───────▶</div>
+    </div>
+    <div class="slot">
+      <div class="slot-cap">out — the confusion belongs to the small part</div>
+      <table class="df">
+        <tr><th>visit hunts</th><th>wrong-scan share</th></tr>
+        <tr><td>plain items</td><td>17.8%</td></tr>
+        <tr><td>small parts</td><td>26.9%</td></tr>
+      </table>
+      <div class="rows good">ratio 1.52 — chi-square p ≈ 1e-158</div>
+    </div>
+  </div>
+
+  <div class="rule warn">A <code>PickWrongItem</code> row names <b>the item picked up by mistake</b> — the neighbour on the shelf — not the item the worker was sent for. Group by that item and you measure which things get grabbed by accident, then call it "which things get confused".</div>
+  <div class="rule">The effect was in the data the whole time. <b>No statistical test rescues a metric built on a misunderstood process.</b> Metric before test; process before metric.</div>
+
+  <p class="note">Second, quieter leak in version 1: a wrong scan whose barcode never resolved has no <code>item_id</code> at all, so <code>dropna()</code> silently deleted 7,205 of the 33,317 wrong scans — the same rows the <code>groupby</code> trap ate in session 2.</p>
+</div>
+
+<!-- ============ CARD 4 — where a p-value comes from ============ -->
+
+<!-- ============ CARD 5 — the fuller map, beyond this course ============ -->
+<div class="card" id="card5">
+  <h2>Card 5 &mdash; choosing a test: the fuller map</h2>
+  <p class="sub">Card 3 is the working map for this course. This one is the reference you will want later, when the data stops being two independent piles of numbers. <b>Extra: nothing on this card is examined, and none of it is needed for HW1.</b></p>
+
+  <div class="step-fig">
+      <svg viewBox="0 0 1000 430" width="100%" xmlns="http://www.w3.org/2000/svg"
+           font-family="Avenir Next, Segoe UI, system-ui, sans-serif">
+        <defs>
+          <marker id="tip" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9"
+                  refX="8" refY="4.5" orient="auto">
+            <path d="M0,0.5 L9,4.5 L0,8.5 z" fill="#9aa4b4"/>
+          </marker>
+        </defs>
+        <g font-size="15" fill="#1a2233" text-anchor="middle">
+          <rect x="390" y="10" width="220" height="38" rx="10" fill="#eef1f6" stroke="#d9dee8"/>
+          <text x="500" y="34" font-weight="700">two groups of numbers</text>
+          <path d="M 500 48 L 500 74" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+
+          <rect x="350" y="78" width="300" height="44" rx="10" fill="#e9f0fc" stroke="#2757a8"/>
+          <text x="500" y="98" font-weight="700">are the two groups paired?</text>
+          <text x="500" y="115" font-size="13" fill="#6b7486">the same unit measured twice, or matched one to one</text>
+
+          <path d="M 350 100 L 250 100 L 250 152" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="300" y="92" font-size="14" fill="#b3392f" font-weight="700">no</text>
+          <path d="M 650 100 L 755 100 L 755 152" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="706" y="92" font-size="14" fill="#1c6b3a" font-weight="700">yes</text>
+
+          <rect x="80" y="156" width="340" height="52" rx="10" fill="#e9f0fc" stroke="#2757a8"/>
+          <text x="250" y="178" font-weight="700">is the AVERAGE well behaved?</text>
+          <text x="250" y="197" font-size="13" fill="#6b7486">not the data, the average. See the note below</text>
+
+          <rect x="585" y="156" width="340" height="52" rx="10" fill="#e9f0fc" stroke="#2757a8"/>
+          <text x="755" y="178" font-weight="700">is the average DIFFERENCE well behaved?</text>
+          <text x="755" y="197" font-size="13" fill="#6b7486">of the per-unit differences, not of either group</text>
+
+          <path d="M 150 208 L 150 258" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="132" y="236" font-size="14" fill="#b3392f" font-weight="700">no</text>
+          <path d="M 355 208 L 375 258" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="384" y="236" font-size="14" fill="#1c6b3a" font-weight="700">yes</text>
+          <path d="M 650 208 L 640 258" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="622" y="236" font-size="14" fill="#b3392f" font-weight="700">no</text>
+          <path d="M 860 208 L 870 258" stroke="#6b7486" stroke-width="1.5" marker-end="url(#tip)"/>
+          <text x="882" y="236" font-size="14" fill="#1c6b3a" font-weight="700">yes</text>
+
+          <rect x="45" y="262" width="215" height="52" rx="10" fill="#fdf3d9" stroke="#9a6a00"/>
+          <text x="152" y="284" font-weight="700" font-family="SF Mono, Menlo, Consolas, monospace" font-size="14">mannwhitneyu(a, b)</text>
+          <text x="152" y="303" font-size="13" fill="#6b7486">Mann-Whitney U</text>
+
+          <rect x="285" y="262" width="255" height="52" rx="10" fill="#e5f5e9" stroke="#1c6b3a"/>
+          <text x="412" y="284" font-weight="700" font-family="SF Mono, Menlo, Consolas, monospace" font-size="14">ttest_ind(a, b, equal_var=False)</text>
+          <text x="412" y="303" font-size="13" fill="#6b7486">Welch's t-test</text>
+
+          <rect x="545" y="262" width="195" height="52" rx="10" fill="#fdf3d9" stroke="#9a6a00"/>
+          <text x="642" y="284" font-weight="700" font-family="SF Mono, Menlo, Consolas, monospace" font-size="14">wilcoxon(a, b)</text>
+          <text x="642" y="303" font-size="13" fill="#6b7486">Wilcoxon signed-rank</text>
+
+          <rect x="765" y="262" width="195" height="52" rx="10" fill="#e5f5e9" stroke="#1c6b3a"/>
+          <text x="862" y="284" font-weight="700" font-family="SF Mono, Menlo, Consolas, monospace" font-size="14">ttest_rel(a, b)</text>
+          <text x="862" y="303" font-size="13" fill="#6b7486">paired t-test</text>
+
+          <rect x="150" y="345" width="700" height="66" rx="10" fill="#fcfdff" stroke="#d9dee8" stroke-dasharray="6 4"/>
+          <text x="500" y="368" font-weight="700">the escape hatch, for anything the four boxes do not cover</text>
+          <text x="500" y="389" font-size="14" fill="#6b7486">your metric is a median, a p90, a ratio, a share of counts, or something you invented:</text>
+          <text x="500" y="406" font-size="14" fill="#6b7486">permutation test for the p-value, bootstrap for the interval. Always legal, no formula needed.</text>
+        </g>
+      </svg>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">1</span><span class="step-title">Paired or not is the first fork, and it is about the design, not the data</span></div>
+    <p class="step-q">Unpaired: group A and group B are different people, different sites, different warehouses. Paired: the same unit measured twice, before and after; or a switchback experiment where you deliberately match Monday to Monday and Tuesday to Tuesday. Pairing is something you built into the experiment, so you know the answer before you look at a single number.</p>
+    <div class="step-take">Getting this wrong costs you either a real effect or a fake one. A paired test on unpaired data is not a stricter version of the same thing; it is a different question.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">2</span><span class="step-title">"The data must be normal" is the most common myth in the box</span></div>
+    <p class="step-q">What has to behave is the <b>average</b>, not the data. That is why the boxes above say AVERAGE in capitals. Our own pick times are a good example: the column itself is wildly skewed, and at the sample sizes we use the average of it is textbook normal.</p>
+    <div class="step-take warn">But "n &gt; 30 and you are fine" is a rule of thumb, not a law, and how large n has to be depends on how skewed the column is. Measured on our pick times (skewness 22.6), two identical groups and a 5% bar: at n = 30 the test fires on <b>2.2%</b> of runs, at n = 1,000 on <b>4.2%</b>. It is not lying to you, it is being too cautious, which costs you real findings rather than inventing fake ones. One-sided tests suffer more than two-sided ones.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">3</span><span class="step-title">The "equal variances?" branch is one you can delete</span></div>
+    <p class="step-q">Many charts put a Levene test here and send you to Student or to Welch depending on the answer. Measured, two identical populations, 5% bar, group sizes 10 and 40 with one spread three times the other:</p>
+    <table class="df" style="margin: 6px 0 0 40px">
+      <tr><th class="idx">route</th><th>fires on</th><th>should be</th></tr>
+      <tr><td class="idx">plain <code>ttest_ind</code></td><td class="bad">0.2%</td><td>5%</td></tr>
+      <tr><td class="idx">Levene first, then choose</td><td>4.4%</td><td>5%</td></tr>
+      <tr><td class="idx"><code>equal_var=False</code> always</td><td class="good">4.7%</td><td>5%</td></tr>
+    </table>
+    <div class="step-take">Welch costs nothing when the variances really are equal and saves you when they are not. So skip the branch and the extra test: <b>pass <code>equal_var=False</code> every time</b>. Note that scipy does not do this for you, its default is the plain version.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">4</span><span class="step-title">Does your test actually work here? Run it on two identical groups</span></div>
+    <p class="step-q">Split one population in half at random and test. There is no effect by construction, so the test should fire on exactly &alpha; of the runs, and its p-values should be spread evenly between 0 and 1. That is what "an A/A test" means, and `stats.kstest` against a uniform will tell you whether they are.</p>
+    <div class="step-take warn">One trap in that check. Even spreading is a property of tests built on a <i>continuous</i> number. On counts it fails by design: chi-square on 40 observations per group came out with an average p of <b>0.69</b> and fired on <b>1.5%</b> of runs instead of 5%. The test is not broken, it is discrete and cautious. A failed uniformity check on a counting test is not, by itself, bad news.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">5</span><span class="step-title">And in production, most of this stops mattering</span></div>
+    <p class="step-q">With tens of thousands of rows the average is well behaved whatever the column looks like, Welch handles the variances, and the choice between the boxes above changes the decimals rather than the verdict.</p>
+    <div class="step-take">What does not stop mattering is everything on card 1's checklist: <b>the more data you have, the less the shape of it matters and the more the design does</b>. At big n everything clears the bar, so the binding question stops being "is it real" and becomes "is it big enough to act on, and did I measure the right thing at all". That is card 4.</div>
+  </div>
+
+  <p class="note"><b>A naming trap worth knowing.</b> <code>wilcoxon</code> in scipy is the <i>paired</i> rank test. The unpaired one is <code>mannwhitneyu</code>, which older books call the Wilcoxon rank-sum test. Same surname, two different tests, and they sit on opposite sides of the chart above.</p>
+</div>
+
+<script>
+/* Live panels for card 2. No libraries, no network: everything is simulated here,
+   in the same shape as concept-cards-figures.ipynb, so the pictures agree. */
+(function () {
+  "use strict";
+
+  var INK = "#1a2233", MUTED = "#6b7486", GREY = "#b9c2cf";
+  var BLUE = "#2757a8", GREEN = "#1c6b3a", RED = "#b3392f";
+  var SIZES = [4, 10, 25, 50, 100, 200, 400, 1000];
+  var LEVELS = [[80, 1.2816], [90, 1.6449], [95, 1.9600], [99, 2.5758]];
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  /* one fixed population of cats: lognormal, median 4.8 kg */
+  var POP = new Float64Array(40000);
+  (function () {
+    var r = mulberry32(7);
+    for (var i = 0; i < POP.length; i++) {
+      var u = Math.max(r(), 1e-12), v = r();
+      var z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      POP[i] = 4.8 * Math.exp(0.24 * z);
+    }
+  })();
+  var TRUE_MEAN = 0;
+  for (var i = 0; i < POP.length; i++) TRUE_MEAN += POP[i];
+  TRUE_MEAN /= POP.length;
+  var TRUE_SD = 0;
+  for (var j = 0; j < POP.length; j++) TRUE_SD += (POP[j] - TRUE_MEAN) * (POP[j] - TRUE_MEAN);
+  TRUE_SD = Math.sqrt(TRUE_SD / POP.length);
+
+  function quantile(sorted, q) {
+    var pos = (sorted.length - 1) * q, lo = Math.floor(pos);
+    return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (pos - lo);
+  }
+  function sortedCopy(a) { var c = Array.prototype.slice.call(a); c.sort(function (p, q) { return p - q; }); return c; }
+  var POP_SORTED = sortedCopy(POP);
+
+  /* gaussian kernel density on a grid, Silverman bandwidth */
+  function density(values, from, to, points) {
+    var n = values.length, mean = 0, i;
+    for (i = 0; i < n; i++) mean += values[i];
+    mean /= n;
+    var sd = 0;
+    for (i = 0; i < n; i++) sd += (values[i] - mean) * (values[i] - mean);
+    sd = Math.sqrt(sd / n) || 1e-6;
+    var h = 1.06 * sd * Math.pow(n, -0.2);
+    var out = new Float64Array(points), step = (to - from) / (points - 1);
+    var reach = 4 * h;
+    for (i = 0; i < n; i++) {
+      var v = values[i];
+      var lo = Math.max(0, Math.ceil((v - reach - from) / step));
+      var hi = Math.min(points - 1, Math.floor((v + reach - from) / step));
+      for (var k = lo; k <= hi; k++) {
+        var d = (from + k * step - v) / h;
+        out[k] += Math.exp(-0.5 * d * d);
+      }
+    }
+    return out;
+  }
+
+  function polygon(grid, values, xOf, base, top, peak, fill, opacity) {
+    var pts = [], i;
+    for (i = 0; i < grid.length; i++) {
+      var y = base - Math.min(values[i] / peak, 1) * (base - top);
+      pts.push(xOf(grid[i]).toFixed(1) + "," + y.toFixed(1));
+    }
+    return '<polygon points="' + xOf(grid[0]).toFixed(1) + "," + base + " " + pts.join(" ") +
+      " " + xOf(grid[grid.length - 1]).toFixed(1) + "," + base +
+      '" fill="' + fill + '" opacity="' + opacity + '"/>';
+  }
+
+  function axis(xOf, ticks, base, decimals) {
+    var marks = ticks.map(function (t) {
+      return '<text x="' + xOf(t).toFixed(0) + '" y="' + (base + 22) + '">' + t.toFixed(decimals) + "</text>";
+    }).join("");
+    return '<line x1="55" y1="' + base + '" x2="975" y2="' + base + '" stroke="' + INK + '" stroke-width="1.5"/>' +
+      '<g font-size="14" fill="' + MUTED + '" text-anchor="middle">' + marks + "</g>";
+  }
+
+  function grid(from, to, points) {
+    var g = new Float64Array(points), step = (to - from) / (points - 1);
+    for (var i = 0; i < points; i++) g[i] = from + i * step;
+    return g;
+  }
+
+  /* ---------------------------------------------------- panel: the CLT */
+  var cltGrid = grid(2.2, 9.0, 460);
+  var popDensity = density(POP.subarray(0, 12000), 2.2, 9.0, 460);
+  var popPeak = Math.max.apply(null, Array.prototype.slice.call(popDensity));
+
+  function drawCLT(n) {
+    var rand = mulberry32(2024), studies = 1500, means = new Float64Array(studies), i, k;
+    for (i = 0; i < studies; i++) {
+      var total = 0;
+      for (k = 0; k < n; k++) total += POP[(rand() * POP.length) | 0];
+      means[i] = total / n;
+    }
+    var meanDensity = density(means, 2.2, 9.0, 460);
+    var meanPeak = Math.max.apply(null, Array.prototype.slice.call(meanDensity));
+    var xOf = function (v) { return 70 + (v - 2.2) * (960 - 70) / (9.0 - 2.2); };
+
+    /* two bands, one above the other, on one x-scale: neither hides the other */
+    var topBase = 150, topPeak = 30;      /* single cats */
+    var lowBase = 286, lowPeak = 176;     /* averages of n */
+
+    function band(values, peakValue, base, top, fill, opacity) {
+      var pts = [], j;
+      for (j = 0; j < cltGrid.length; j++) {
+        var y = base - Math.min(values[j] / peakValue, 1) * (base - top);
+        pts.push(xOf(cltGrid[j]).toFixed(1) + "," + y.toFixed(1));
+      }
+      return '<polygon points="' + xOf(cltGrid[0]).toFixed(1) + "," + base + " " +
+        pts.join(" ") + " " + xOf(cltGrid[cltGrid.length - 1]).toFixed(1) + "," + base +
+        '" fill="' + fill + '" opacity="' + opacity + '"/>';
+    }
+
+    var sorted = sortedCopy(means);
+    var lo = quantile(sorted, 0.025), hi = quantile(sorted, 0.975);
+    var mu = 0, sd = 0;
+    for (i = 0; i < studies; i++) mu += means[i];
+    mu /= studies;
+    for (i = 0; i < studies; i++) sd += (means[i] - mu) * (means[i] - mu);
+    sd = Math.sqrt(sd / studies);
+    var popLo = quantile(POP_SORTED, 0.025), popHi = quantile(POP_SORTED, 0.975);
+
+    function span(from, to, y, colour, label) {
+      return '<line x1="' + xOf(from).toFixed(1) + '" y1="' + y + '" x2="' + xOf(to).toFixed(1) +
+        '" y2="' + y + '" stroke="' + colour + '" stroke-width="2"/>' +
+        '<line x1="' + xOf(from).toFixed(1) + '" y1="' + (y - 4) + '" x2="' + xOf(from).toFixed(1) +
+        '" y2="' + (y + 4) + '" stroke="' + colour + '" stroke-width="2"/>' +
+        '<line x1="' + xOf(to).toFixed(1) + '" y1="' + (y - 4) + '" x2="' + xOf(to).toFixed(1) +
+        '" y2="' + (y + 4) + '" stroke="' + colour + '" stroke-width="2"/>' +
+        '<text x="' + (xOf(to) + 10).toFixed(1) + '" y="' + (y + 5) + '" font-size="14" ' +
+        'fill="' + colour + '" font-weight="700">' + label + "</text>";
+    }
+
+    document.getElementById("clt-fig").innerHTML =
+      band(popDensity, popPeak, topBase, topPeak, GREY, 1) +
+      '<line x1="55" y1="' + topBase + '" x2="975" y2="' + topBase +
+        '" stroke="#c7cedb" stroke-width="1.5"/>' +
+      '<text x="70" y="46" font-size="15" font-weight="700" fill="' + MUTED +
+        '">one cat</text>' +
+      span(popLo, popHi, topBase - 10, "#8d97a8", "95% span " + (popHi - popLo).toFixed(2) + " kg") +
+      band(meanDensity, meanPeak, lowBase, lowPeak, BLUE, 0.85) +
+      '<text x="70" y="192" font-size="15" font-weight="700" fill="' + BLUE +
+        '">average of ' + n + " cats</text>" +
+      span(lo, hi, lowBase - 10, BLUE, "95% span " + (hi - lo).toFixed(2) + " kg") +
+      '<line x1="' + xOf(TRUE_MEAN).toFixed(0) + '" y1="18" x2="' + xOf(TRUE_MEAN).toFixed(0) +
+        '" y2="' + (lowBase + 8) + '" stroke="' + GREEN + '" stroke-width="2"/>' +
+      '<text x="' + xOf(TRUE_MEAN).toFixed(0) + '" y="14" font-size="14" font-weight="700" ' +
+        'text-anchor="middle" fill="' + GREEN + '">the truth, ' + TRUE_MEAN.toFixed(2) + " kg</text>" +
+      axis(xOf, [3, 4, 5, 6, 7, 8, 9], lowBase, 0) +
+      '<text x="500" y="326" font-size="14" fill="' + MUTED +
+        '" text-anchor="middle">kilograms, one scale for both bands</text>';
+
+    document.getElementById("clt-read").innerHTML =
+      "With <b>n = " + n + "</b> the averages spread by <b>" + sd.toFixed(3) +
+      " kg</b>; &sigma;/&radic;n predicts <b>" + (TRUE_SD / Math.sqrt(n)).toFixed(3) +
+      "</b>. The lower band is <b>" + ((popHi - popLo) / (hi - lo)).toFixed(1) +
+      "&times;</b> narrower than the upper one.";
+    Array.prototype.forEach.call(document.querySelectorAll(".live-n"), function (el) {
+      el.textContent = n;
+    });
+  }
+
+  /* ------------------------------------------ panel: forty intervals */
+  var intervalSeed = 3;    /* a run with the expected two misses; the button walks on from here */
+
+  function drawCI(n, z, label) {
+    var rand = mulberry32(intervalSeed), rows = 40, bars = [], i, k;
+    var los = [], his = [], caught = 0, widths = 0;
+    for (i = 0; i < rows; i++) {
+      var total = 0, squares = 0, values = new Float64Array(n);
+      for (k = 0; k < n; k++) { var v = POP[(rand() * POP.length) | 0]; values[k] = v; total += v; }
+      var m = total / n;
+      for (k = 0; k < n; k++) squares += (values[k] - m) * (values[k] - m);
+      var s = Math.sqrt(squares / Math.max(n - 1, 1));
+      var reach = z * s / Math.sqrt(n);
+      los.push(m - reach); his.push(m + reach); widths += 2 * reach;
+      if (m - reach <= TRUE_MEAN && TRUE_MEAN <= m + reach) caught++;
+    }
+
+    /* the window is FIXED, whatever n is: that is the whole point of the panel.
+       Bars that do not fit are clipped and marked with a chevron. */
+    var from = TRUE_MEAN - 1.15, to = TRUE_MEAN + 1.15;
+    var left = 60, right = 965;
+    var xOf = function (v) { return left + (v - from) * (right - left) / (to - from); };
+    var base = 300;
+
+    for (i = 0; i < rows; i++) {
+      var y = 16 + i * 7.0;
+      var hit = los[i] <= TRUE_MEAN && TRUE_MEAN <= his[i];
+      var colour = hit ? "#8d97a8" : RED;
+      var w = hit ? 2 : 3;
+      var lo = Math.max(los[i], from), hi = Math.min(his[i], to);
+      if (hi <= from || lo >= to) continue;
+      bars.push('<line x1="' + xOf(lo).toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' +
+        xOf(hi).toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + colour +
+        '" stroke-width="' + w + '"/>');
+      /* a flat cap where the interval really ends, a chevron where it ran off the chart */
+      if (los[i] >= from) {
+        bars.push('<line x1="' + xOf(lo).toFixed(1) + '" y1="' + (y - 3.2).toFixed(1) +
+          '" x2="' + xOf(lo).toFixed(1) + '" y2="' + (y + 3.2).toFixed(1) +
+          '" stroke="' + colour + '" stroke-width="' + w + '"/>');
+      } else {
+        bars.push('<polyline points="' + (left + 7) + "," + (y - 3.5).toFixed(1) + " " +
+          left + "," + y.toFixed(1) + " " + (left + 7) + "," + (y + 3.5).toFixed(1) +
+          '" fill="none" stroke="' + colour + '" stroke-width="' + w + '"/>');
+      }
+      if (his[i] <= to) {
+        bars.push('<line x1="' + xOf(hi).toFixed(1) + '" y1="' + (y - 3.2).toFixed(1) +
+          '" x2="' + xOf(hi).toFixed(1) + '" y2="' + (y + 3.2).toFixed(1) +
+          '" stroke="' + colour + '" stroke-width="' + w + '"/>');
+      } else {
+        bars.push('<polyline points="' + (right - 7) + "," + (y - 3.5).toFixed(1) + " " +
+          right + "," + y.toFixed(1) + " " + (right - 7) + "," + (y + 3.5).toFixed(1) +
+          '" fill="none" stroke="' + colour + '" stroke-width="' + w + '"/>');
+      }
+    }
+
+    var ticks = [], stepSize = (to - from) / 6;
+    for (i = 0; i <= 6; i++) ticks.push(from + i * stepSize);
+    document.getElementById("ci-fig").innerHTML =
+      bars.join("") +
+      '<line x1="' + xOf(TRUE_MEAN).toFixed(0) + '" y1="10" x2="' + xOf(TRUE_MEAN).toFixed(0) +
+        '" y2="' + (base + 6) + '" stroke="' + GREEN + '" stroke-width="2.5"/>' +
+      '<text x="' + (xOf(TRUE_MEAN) + 8).toFixed(0) + '" y="10" font-size="14" font-weight="700" ' +
+        'text-anchor="start" fill="' + GREEN + '">the truth, ' + TRUE_MEAN.toFixed(2) + " kg</text>" +
+      axis(xOf, ticks, base, 2) +
+      '<text x="500" y="336" font-size="14" fill="' + MUTED +
+        '" text-anchor="middle">each bar is one study of ' + n +
+        " cats, kilograms, and the scale never changes</text>";
+    document.getElementById("ci-read").innerHTML =
+      "Average width of a bar at <b>n = " + n + "</b>: <b>" + (widths / rows).toFixed(2) +
+      " kg</b>. This run: <b>" + caught + " of 40</b> cover the truth, " + (40 - caught) +
+      " miss, built at <b>" + label + "</b> confidence, where about " +
+      Math.round(40 * parseInt(label, 10) / 100) +
+      " of every 40 should. Quadruple the cats and the width halves; drop the confidence and " +
+      "the bars get shorter but more of them miss.";
+  }
+
+  /* ------------------------------------------------------------ wiring */
+  function ready() {
+    var cltSlider = document.getElementById("clt-n");
+    var cltOut = document.getElementById("clt-n-out");
+    var ciSlider = document.getElementById("ci-n");
+    var ciOut = document.getElementById("ci-n-out");
+    var confSlider = document.getElementById("ci-conf");
+    var confOut = document.getElementById("ci-conf-out");
+    var again = document.getElementById("ci-again");
+    if (!cltSlider || !ciSlider) return;
+
+    function refreshCLT() {
+      var n = SIZES[+cltSlider.value];
+      cltOut.textContent = n;
+      drawCLT(n);
+    }
+    function refreshCI() {
+      var n = SIZES[+ciSlider.value], level = LEVELS[+confSlider.value];
+      ciOut.textContent = n;
+      confOut.textContent = level[0] + "%";
+      drawCI(n, level[1], level[0] + "%");
+    }
+    cltSlider.addEventListener("input", refreshCLT);
+    ciSlider.addEventListener("input", refreshCI);
+    confSlider.addEventListener("input", refreshCI);
+    again.addEventListener("click", function () { intervalSeed += 1; refreshCI(); });
+    refreshCLT();
+    refreshCI();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ready);
+  } else {
+    ready();
+  }
+})();
+</script>
+</body>
+</html>
