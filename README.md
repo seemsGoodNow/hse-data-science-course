@@ -29,9 +29,10 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/) |                      |
 | 3 | Sep 16 | Descriptive statistics and visualization                     | [03-stats-viz](lectures/03-stats-viz/)         | **HW1 out**          |
 | 4 | Sep 23 | Hypothesis testing                                           | [04-hypothesis-testing](lectures/04-hypothesis-testing/) |            |
-| 5 | Sep 30 | Machine learning on tabular data                             | —         | **HW1 due 18:00, HW2 out** |
+| 5 | Sep 30 | Machine learning on tabular data                             | [05-ml-tables](lectures/05-ml-tables/) | **HW1 due 18:00, HW2 out** |
 | 6 | Oct 7  | Evaluating models                                            | —         | **Quiz, first 25 min** |
-| 7 | Oct 14 | Clustering and communicating results                         | —         | **HW2 due 18:00**    |
+| 7 | Oct 14 | Clustering and communicating results                         | —         |                      |
+|   | Oct 21 |                                                              |           | **HW2 due 18:00**    |
 
 The Materials column fills in as we go: notebooks are pushed the same evening as the session, slides right after.
 
@@ -42,12 +43,12 @@ The Materials column fills in as we go: notebooks are pushed the same evening as
 | Work | Out | Due | Weight |
 |---|---|---|---|
 | [**HW1**](homeworks/hw1/) — one warehouse, and what you can prove about it | Sep 16 | Sep 30, 18:00 | 40% |
-| [**HW2**](homeworks/hw2/) — corporate bankruptcy: predict it and explain it | Sep 30 | Oct 14, 18:00 | 40% |
+| [**HW2**](homeworks/hw2/) — predict a business outcome and explain it | Sep 30 | Oct 21, 18:00 | 40% |
 | **Quiz** — in class, start of Session 6 | | Oct 7, 18:10 | 20% |
 
-Both homeworks are individual: in HW1 you are assigned one whole warehouse out of four, in HW2 your own subsample of the bankruptcy data and your own cost of a missed default. The format is a *researcher's story*: a notebook where hypotheses are stated **before** the code, conclusions follow the evidence, and a short business summary closes the work. You submit the notebook plus an exported HTML by direct message; each assignment folder has a template notebook to start from and the export steps are in the [setup guide](lectures/00-precourse/00-setup.md).
+Both homeworks are individual: in HW1 you are assigned one whole warehouse out of four, in HW2 one of five real business datasets (credit, lending, marketing, hotel bookings) and the cost of each kind of mistake in that business. The format is a *researcher's story*: a notebook where hypotheses are stated **before** the code, conclusions follow the evidence, and a short business summary closes the work. You submit the notebook plus an exported HTML by direct message; each assignment folder has a template notebook to start from and the export steps are in the [setup guide](lectures/00-precourse/00-setup.md).
 
-A detailed rubric is published with each assignment. The scale is the same for both: a complete, correct submission scores **up to 8 of 10**, and the last two points are for **one extra move done well**, your choice from a short list in the assignment (an extra hypothesis, an AI-built HTML one-pager, a statistical test). Statistical tests are optional in HW1: a clear split, a chart and a defended verdict is a complete answer.
+A detailed rubric is published with each assignment. The scale is the same for both: a complete, correct submission scores **up to 8 of 10**, and the last two points are for **one extra move done well**, your choice from a short list in each assignment (in HW1: an extra hypothesis, an AI-built HTML one-pager or a statistical test; in HW2: an AI-built HTML one-pager, cross-validation or resampling). Statistical tests are optional in HW1: a clear split, a chart and a defended verdict is a complete answer.
 
 The **quiz** is 15 questions, about 25 minutes, closed book. It tests understanding, not memory: read a chart, spot the bug in a pandas snippet, interpret a p-value.
 
@@ -82,7 +83,7 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 - train and interpret ML models (regressions, gradient boosting, SHAP) without drowning in math;
 - package findings into artifacts a business person will actually read, including AI-generated HTML reports.
 
-**The data.** Sessions 1 to 4 and HW1 run on **warehouse operations logs** (picking, stock, warehouse topology), closely modelled on the live processes of a real e-commerce site. Sessions 5 and 6 and HW2 move to your home turf: **corporate bankruptcy data**, the financial ratios of ~6,800 real companies with a bankruptcy label. Session 7 adds **consumer complaints about financial products**, ten thousand pieces of real text to cluster.
+**The data.** Sessions 1 to 4 and HW1 run on **warehouse operations logs** (picking, stock, warehouse topology), closely modelled on the live processes of a real e-commerce site. Sessions 5 and 6 move to your home turf: **corporate bankruptcy data**, the financial ratios of ~6,800 real companies with a bankruptcy label. HW2 hands each student one of **five real business datasets**: credit card default, bank telemarketing, home-equity loans, peer-to-peer loans and hotel cancellations. Session 7 adds **consumer complaints about financial products**, ten thousand pieces of real text to cluster.
 
 ## What's inside each session
 
@@ -138,12 +139,15 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 <details>
 <summary><b>5. Machine learning on tabular data</b></summary>
 
-- What ML solves: prediction vs explanation, regression vs classification
-- Linear and logistic regression as ideas; overfitting
-- Gradient boosting, the workhorse of tabular ML
-- Which features matter: SHAP, by analogy with regression coefficients
-- "Train and test a model in minutes" with an AI assistant, and what to check afterwards
-- Case: corporate bankruptcy, from Altman's Z-score (1968) to gradient boosting
+- From describing and testing to predicting: a number (regression) or a class (classification)
+- The first model is a straight line through points: least squares on five made-up tasks, then on 4,077 real warehouse tasks
+- Reading a regression like an economist: coefficients, p-values, R² as the share of variance explained; significant is not the same as big; two classic traps (features in different units, correlated "twin" features that flip signs) and when the p-values can be trusted (Gauss–Markov)
+- Case: corporate bankruptcy. Where the data comes from, where to find datasets yourself (UCI, Kaggle, Hugging Face), and Altman's Z-score (1968) as one line between bankrupt and healthy firms
+- Logistic regression: the same weighted sum pushed through a sigmoid and read as a probability of default, the model behind banks' credit scorecards (Bank of Russia Regulation 483-P)
+- The imbalance trap: a 97%-accurate model that catches almost no bankruptcies; class weights, and what they cost in recall and precision
+- When a line is not enough: decision trees and gradient boosting, the workhorse of tabular ML; built-in importance and SHAP instead of coefficients
+- Training a model in minutes with an AI assistant, and what to check afterwards: the train score is not a grade
+- HW2 goes out: one real business dataset, from charts to a threshold that saves money
 </details>
 
 <details>
@@ -164,3 +168,10 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 - Dimensionality reduction at a glance (PCA and t-SNE, read as a map rather than as math)
 - The finale: a full research from scratch, turned into an AI-assisted HTML report for a business customer
 </details>
+
+## Going further
+
+Want to learn machine learning from the ground up, beyond what this course covers?
+
+- **[Machine Learning Handbook by the Yandex School of Data Analysis](https://contest.yandex.ru/tracks/ml/)** (in Russian, free): a full textbook from classical models to neural networks, with the math and the code behind each method. It assumes linear algebra, calculus and probability, so treat it as the next step after this course, not a replacement for it.
+- The [extras](lectures/extras/) folder collects shorter follow-up topics in the style of this course.
