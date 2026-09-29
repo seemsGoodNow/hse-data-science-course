@@ -29,7 +29,8 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | 2 | Sep 9  | Working with tables: pandas + SQL                            | [02-tables](lectures/02-tables/) |                      |
 | 3 | Sep 16 | Descriptive statistics and visualization                     | [03-stats-viz](lectures/03-stats-viz/)         | **HW1 out**          |
 | 4 | Sep 23 | Hypothesis testing                                           | [04-hypothesis-testing](lectures/04-hypothesis-testing/) |            |
-| 5 | Sep 30 | Machine learning on tabular data                             | [05-ml-tables](lectures/05-ml-tables/) | **HW1 due 18:00, HW2 out** |
+| 5 | Sep 30 | Machine learning on tabular data                             | [05-ml-tables](lectures/05-ml-tables/) | **HW2 out**          |
+|   | Oct 4 (Sun) |                                                         |           | **HW1 due 23:59**    |
 | 6 | Oct 7  | Evaluating models                                            | —         | **Quiz, first 25 min** |
 | 7 | Oct 14 | Clustering and communicating results                         | —         |                      |
 |   | Oct 21 |                                                              |           | **HW2 due 18:00**    |
@@ -42,7 +43,7 @@ The Materials column fills in as we go: notebooks are pushed the same evening as
 
 | Work | Out | Due | Weight |
 |---|---|---|---|
-| [**HW1**](homeworks/hw1/) — one warehouse, and what you can prove about it | Sep 16 | Sep 30, 18:00 | 40% |
+| [**HW1**](homeworks/hw1/) — one warehouse, and what you can prove about it | Sep 16 | Oct 4 (Sun), 23:59 | 40% |
 | [**HW2**](homeworks/hw2/) — predict a business outcome and explain it | Sep 30 | Oct 21, 18:00 | 40% |
 | **Quiz** — in class, start of Session 6 | | Oct 7, 18:10 | 20% |
 

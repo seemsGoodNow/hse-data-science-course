@@ -1,6 +1,6 @@
 # HW1 — One warehouse, and what you can prove about it
 
-**Out:** Sep 16 (Session 3) | **Due:** Sep 30, 18:00 (Session 5) | **Weight:** 40% of the final grade | Individual.
+**Out:** Sep 16 (Session 3) | **Due:** Sunday, Oct 4, 23:59 | **Weight:** 40% of the final grade | Individual.
 
 You are assigned **one of four warehouses** in a direct message when the assignment goes out:
 `podolsk`, `kazan`, `ekaterinburg` or `novosibirsk`. Your data is the matching folder inside
