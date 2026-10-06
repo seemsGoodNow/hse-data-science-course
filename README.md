@@ -31,7 +31,7 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | 4 | Sep 23 | Hypothesis testing                                           | [04-hypothesis-testing](lectures/04-hypothesis-testing/) |            |
 | 5 | Sep 30 | Machine learning on tabular data                             | [05-ml-tables](lectures/05-ml-tables/) | **HW2 out**          |
 |   | Oct 4 (Sun) |                                                         |           | **HW1 due 23:59**    |
-| 6 | Oct 7  | Evaluating models                                            | —         | **Quiz, first 25 min** |
+| 6 | Oct 7  | Evaluating models                                            | [06-model-evaluation](lectures/06-model-evaluation/) | **Quiz, 19:00, in class** |
 | 7 | Oct 14 | Clustering and communicating results                         | —         |                      |
 |   | Oct 21 |                                                              |           | **HW2 due 18:00**    |
 
@@ -45,13 +45,13 @@ The Materials column fills in as we go: notebooks are pushed the same evening as
 |---|---|---|---|
 | [**HW1**](homeworks/hw1/) — one warehouse, and what you can prove about it | Sep 16 | Oct 4 (Sun), 23:59 | 40% |
 | [**HW2**](homeworks/hw2/) — predict a business outcome and explain it | Sep 30 | Oct 21, 18:00 | 40% |
-| **Quiz** — in class, start of Session 6 | | Oct 7, 18:10 | 20% |
+| **Quiz** — in class, Session 6 | | Oct 7, 19:00 | 20% |
 
 Both homeworks are individual: in HW1 you are assigned one whole warehouse out of four, in HW2 one of five real business datasets (credit, lending, marketing, hotel bookings) and the cost of each kind of mistake in that business. The format is a *researcher's story*: a notebook where hypotheses are stated **before** the code, conclusions follow the evidence, and a short business summary closes the work. You submit the notebook plus an exported HTML by direct message; each assignment folder has a template notebook to start from and the export steps are in the [setup guide](lectures/00-precourse/00-setup.md).
 
 A detailed rubric is published with each assignment. The scale is the same for both: a complete, correct submission scores **up to 8 of 10**, and the last two points are for **one extra move done well**, your choice from a short list in each assignment (in HW1: an extra hypothesis, an AI-built HTML one-pager or a statistical test; in HW2: an AI-built HTML one-pager, cross-validation or resampling). Statistical tests are optional in HW1: a clear split, a chart and a defended verdict is a complete answer.
 
-The **quiz** is 15 questions, about 25 minutes, closed book. It tests understanding, not memory: read a chart, spot the bug in a pandas snippet, interpret a p-value.
+The **quiz** takes about 25 minutes, in person in the classroom, closed book. **Part A** covers the basics and is enough to pass; **Part B** is for a higher grade and includes two open-ended questions. It tests understanding, not memory: read a small table, a query or a piece of output, and explain what it means.
 
 ### AI policy
 
@@ -154,11 +154,14 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 <details>
 <summary><b>6. Evaluating models</b></summary>
 
-- Quiz (first 25 minutes)
-- Loss is not the metric; the accuracy trap
-- Confusion matrix, precision/recall; picking a threshold when errors have costs
-- Train/test splits, leakage, cross-validation, and why models lie to you
-- Case continued: choosing the operating point of the bankruptcy model when errors have costs
+- Quiz at 19:00, in class
+- A model gives a score; a threshold turns it into a decision. When a score can be read as a probability: calibration, checked by score bands
+- The confusion matrix, drawn the textbook way and the scikit-learn way; recall and precision; why each mistake has its own price, and why one rate alone is easy to game
+- The ROC curve built step by step, and AUC as one grade for the whole menu of thresholds
+- Case continued: choosing the threshold of the bankruptcy model by the cost of each mistake, for different cost ratios, and what class weights do to it
+- Why models lie: a leaked column, a feature selection that peeks at the test, the lucky split; how to hunt a leak in a table you didn't build, and cross-validation
+- Every metric on one page: the business goal first, the model metric as its stand-in, the loss for the computer; metrics for regression and classification, and how to write your own
+- How I work with Claude: how it helped prepare this course, the tricks I use every day, and a live run from raw stock and dividend data to a portfolio report
 </details>
 
 <details>
