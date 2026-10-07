@@ -60,9 +60,12 @@ AI assistants are allowed and encouraged; learning to work with them is part of 
 1. **Think first, then ask, then verify.** Try it yourself, formulate a good request, and check whatever you get before using it.
 2. **You should be able to explain every block of code you submit.** I may ask.
 
+How to get the most out of them: [working with AI, a short recap](working-with-ai.md).
+
 ## What is in this repository
 
 ```
+working-with-ai.md       how to work with AI assistants: a short recap of Session 6
 lectures/00-precourse/   setup guide + Python primer — do this before Session 1
 lectures/NN-topic/       notebooks and materials for each session, slides added after it
 lectures/extras/         optional deep-dives, added over time
@@ -161,7 +164,7 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 - Case continued: choosing the threshold of the bankruptcy model by the cost of each mistake, for different cost ratios, and what class weights do to it
 - Why models lie: a leaked column, a feature selection that peeks at the test, the lucky split; how to hunt a leak in a table you didn't build, and cross-validation
 - Every metric on one page: the business goal first, the model metric as its stand-in, the loss for the computer; metrics for regression and classification, and how to write your own
-- How I work with Claude: how it helped prepare this course, the tricks I use every day, and a live run from raw stock and dividend data to a portfolio report
+- How I work with Claude: how it helped prepare this course, the tricks I use every day, and a live run from raw stock and dividend data to a portfolio report ([short recap](working-with-ai.md))
 </details>
 
 <details>
