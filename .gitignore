@@ -7,6 +7,8 @@ lectures/**/*.html
 !lectures/02-tables/concept-cards.html
 !lectures/03-stats-viz/concept-cards.html
 !lectures/04-hypothesis-testing/concept-cards.html
+!lectures/07-clustering-finale/complaints-report.html
+!lectures/07-clustering-finale/concept-cards.html
 # catboost training logs written by demo notebooks
 catboost_info/
 # csv written by the primer notebook's own write cell (00-precourse §8)

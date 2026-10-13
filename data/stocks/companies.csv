@@ -1,0 +1,31 @@
+ticker,company,sector
+SBER,Sberbank,Banks and finance
+VTBR,VTB Bank,Banks and finance
+BSPB,Bank Saint Petersburg,Banks and finance
+MOEX,Moscow Exchange,Banks and finance
+AFKS,Sistema,Banks and finance
+LKOH,Lukoil,Oil and gas
+ROSN,Rosneft,Oil and gas
+TATN,Tatneft,Oil and gas
+SNGS,Surgutneftegas,Oil and gas
+GAZP,Gazprom,Oil and gas
+NVTK,Novatek,Oil and gas
+SIBN,Gazprom Neft,Oil and gas
+BANEP,Bashneft (preferred),Oil and gas
+PLZL,Polyus,Gold
+SELG,Seligdar,Gold
+GMKN,Nornickel,Metals and mining
+ALRS,Alrosa,Metals and mining
+RUAL,Rusal,Metals and mining
+NLMK,NLMK,Steel
+CHMF,Severstal,Steel
+MAGN,MMK,Steel
+MGNT,Magnit,Consumer and telecom
+MTSS,MTS,Consumer and telecom
+RTKM,Rostelecom,Consumer and telecom
+IRAO,Inter RAO,Utilities
+HYDR,RusHydro,Utilities
+AFLT,Aeroflot,Transport
+FLOT,Sovcomflot,Transport
+PHOR,PhosAgro,Chemicals and real estate
+SMLT,Samolet,Chemicals and real estate

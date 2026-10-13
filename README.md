@@ -32,7 +32,7 @@ Wednesdays, 18:10–21:00: two 80-minute parts with a break. First session **Sep
 | 5 | Sep 30 | Machine learning on tabular data                             | [05-ml-tables](lectures/05-ml-tables/) | **HW2 out**          |
 |   | Oct 4 (Sun) |                                                         |           | **HW1 due 23:59**    |
 | 6 | Oct 7  | Evaluating models                                            | [06-model-evaluation](lectures/06-model-evaluation/) | **Quiz, 19:00, in class** |
-| 7 | Oct 14 | Clustering and communicating results                         | —         |                      |
+| 7 | Oct 14 | Clustering and communicating results                         | [07-clustering-finale](lectures/07-clustering-finale/) |                      |
 |   | Oct 21 |                                                              |           | **HW2 due 18:00**    |
 
 The Materials column fills in as we go: notebooks are pushed the same evening as the session, slides right after.
@@ -60,12 +60,9 @@ AI assistants are allowed and encouraged; learning to work with them is part of 
 1. **Think first, then ask, then verify.** Try it yourself, formulate a good request, and check whatever you get before using it.
 2. **You should be able to explain every block of code you submit.** I may ask.
 
-How to get the most out of them: [working with AI, a short recap](working-with-ai.md).
-
 ## What is in this repository
 
 ```
-working-with-ai.md       how to work with AI assistants: a short recap of Session 6
 lectures/00-precourse/   setup guide + Python primer — do this before Session 1
 lectures/NN-topic/       notebooks and materials for each session, slides added after it
 lectures/extras/         optional deep-dives, added over time
@@ -164,16 +161,20 @@ The warehouse data sits in `data/` from day one; homework data ships inside each
 - Case continued: choosing the threshold of the bankruptcy model by the cost of each mistake, for different cost ratios, and what class weights do to it
 - Why models lie: a leaked column, a feature selection that peeks at the test, the lucky split; how to hunt a leak in a table you didn't build, and cross-validation
 - Every metric on one page: the business goal first, the model metric as its stand-in, the loss for the computer; metrics for regression and classification, and how to write your own
-- How I work with Claude: how it helped prepare this course, the tricks I use every day, and a live run from raw stock and dividend data to a portfolio report ([short recap](working-with-ai.md))
+- How I work with Claude: how it helped prepare this course, the tricks I use every day, and a live run from raw stock and dividend data to a portfolio report
 </details>
 
 <details>
 <summary><b>7. Clustering and communicating results</b></summary>
 
-- Unsupervised learning: k-means intuition, hands on
-- Clustering real text: encoding thousands of real consumer complaints on a laptop CPU
-- Dimensionality reduction at a glance (PCA and t-SNE, read as a map rather than as math)
-- The finale: a full research from scratch, turned into an AI-assisted HTML report for a business customer
+- Opening: the quiz and HW1, the few ideas worth carrying into the HW2 memo
+- A task without an answer column: how clustering differs from regression and classification, and where it shows up in a business
+- How the main algorithms think: k-means by hand, DBSCAN and its noise, HDBSCAN as the practical default, hierarchical clustering; why each finds different groups on different data, and how to choose their settings
+- What goes wrong: groups that aren't there, units that decide the distances, shapes, outliers, unstable results
+- PCA as a rotation of axes: thirty Russian shares compressed into three forces (the market, oil, gold)
+- Texts become numbers: word counts, TF-IDF, a sentence encoder on a laptop; clustering thousands of real consumer complaints and naming what people write about
+- Maps of complex data with PCA, t-SNE and UMAP, and how not to be fooled by them; one month that looks like a trend
+- A checklist for using clustering at work, and the finale: an AI-assisted HTML report built on our own numbers
 </details>
 
 ## Going further
